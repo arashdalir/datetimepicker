@@ -1,0 +1,142 @@
+.datetimepicker-placeholder {
+	position: absolute;
+	box-sizing: border-box;
+	width:      18.5em;
+	display:    none;
+}
+
+.datetimepicker-cell,
+.datetimepicker-flexcell,
+.datetimepicker-line,
+.datetimepicker-list,
+.datetimepicker-view {
+	position:           relative;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing:    border-box;
+	box-sizing:         border-box;
+}
+
+.datetimepicker-view {
+	display: none;
+	padding: 0.1em;
+	text-align: center;
+	margin:0 auto;
+}
+
+.datetimepicker-line {
+	clear:   both;
+	float:   none;
+	display: block;
+}
+
+.datetimepicker-flexcell,
+.datetimepicker-cell {
+	display: inline-block;
+	padding: 0.25em;
+	height:  1.5em;
+	margin:0.25em;
+	cursor: pointer;
+	vertical-align: top;
+}
+
+.datetimepicker-weekdays .datetimepicker-flexcell,
+.datetimepicker-weekdays .datetimepicker-cell{
+	cursor: inherit;
+}
+
+.datetimepicker-cell{
+	width:   2em;
+}
+.datetimepicker-flexcell{
+	width:   auto;
+}
+
+.datetimepicker-list{
+	margin: 0.1em 0;
+}
+
+.datetimepicker-prev,
+.datetimepicker-next{
+	width: 1.5em;
+}
+
+.datetimepicker-prev:after,
+.datetimepicker-next:after {
+	position:       absolute;
+	top: 0;
+	left: 0;
+	vertical-align: middle;
+	text-align:     center;
+	width: 100%;
+	height: 100%;
+}
+
+.datetimepicker-prev:after {
+	content: '\00AB';
+
+}
+
+.datetimepicker-next:after {
+	content: '\00BB';
+}
+
+.datetimepicker-placeholder .datetimepicker-list{
+	padding: 0.1em;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing:    border-box;
+	box-sizing:         border-box;
+}
+body{
+	min-height: 300px;
+}
+
+.datetimepicker-weekdays{
+	font-weight: bold;
+}
+.datetimepicker-another-month{
+	color: #999999;
+	font-style: italic;
+}
+
+.datetimepicker-today:after{
+	position: absolute;
+	display: block;
+	bottom: 0;
+	right:0;
+	content: '';
+	background: url("images/jquery-ui-icons.png") -50px -20px;
+	height:7px;
+	width: 8px;
+}
+
+.datetimepicker-placeholder .ui-state-active,
+.datetimepicker-selected{
+	font-weight: bold;
+}
+
+.datetimepicker-placeholder .ui-state-disabled,
+.datetimepicker-cell:disabled,
+.datetimepicker-flexcell:disabled,
+.datetimepicker-disabled{
+	cursor: inherit;
+}
+
+.datetimepicker-time{
+	width: 7.5em;
+	text-align: center;
+}
+
+.datetimepicker-placeholder .datetimepicker-list-months,
+.datetimepicker-placeholder .datetimepicker-list-years{
+	padding: 0 0.5em;
+}
+
+.datetimepicker-inline{
+	min-height: 19em;
+}
+
+.datetimepicker-placeholder .clearfix::after {
+	content: "";
+	clear: both;
+	display: table;
+}

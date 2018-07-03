@@ -1,0 +1,340 @@
+/* Icons
+----------------------------------*/
+
+/* states and images */
+
+.ui-icon {
+	width:            16px;
+	height:           16px;
+	background-image: url(../images/jquery/ui-icons_469bdd_256x240.png);
+}
+
+.ui-widget-content .ui-icon {
+	background-image: url(../images/jquery/ui-icons_469bdd_256x240.png);
+}
+
+.ui-widget-header .ui-icon {
+	background-image: url(../images/jquery/ui-icons_d8e7f3_256x240.png);
+}
+
+.ui-state-default .ui-icon {
+	background-image: url(../images/jquery/ui-icons_6da8d5_256x240.png);
+}
+
+.ui-state-hover .ui-icon, .ui-state-focus .ui-icon {
+	background-image: url(../images/jquery/ui-icons_217bc0_256x240.png);
+}
+
+.ui-state-active .ui-icon {
+	background-image: url(../images/jquery/ui-icons_f9bd01_256x240.png);
+}
+
+.ui-state-highlight .ui-icon {
+	background-image: url(../images/jquery/ui-icons_2e83ff_256x240.png);
+}
+
+.ui-state-error .ui-icon, .ui-state-error-text .ui-icon {
+	background-image: url(../images/jquery/ui-icons_cd0a0a_256x240.png);
+}
+
+/* Misc visuals
+----------------------------------*/
+
+/* Corner radius */
+
+.ui-corner-all, .ui-corner-top, .ui-corner-left, .ui-corner-tl {
+	-moz-border-radius-topleft:     0;
+	-webkit-border-top-left-radius: 0;
+	border-top-left-radius:         0;
+}
+
+.ui-corner-all, .ui-corner-top, .ui-corner-right, .ui-corner-tr {
+	-moz-border-radius-topright:     0;
+	-webkit-border-top-right-radius: 0;
+	border-top-right-radius:         0;
+}
+
+.ui-corner-all, .ui-corner-bottom, .ui-corner-left, .ui-corner-bl {
+	-moz-border-radius-bottomleft:     0;
+	-webkit-border-bottom-left-radius: 0;
+	border-bottom-left-radius:         0;
+}
+
+.ui-corner-all, .ui-corner-bottom, .ui-corner-right, .ui-corner-br {
+	-moz-border-radius-bottomright:     0;
+	-webkit-border-bottom-right-radius: 0;
+	border-bottom-right-radius:         0;
+}
+
+/* Overlays */
+.ui-widget-overlay {
+	background: #AAAAAA url(../images/jquery/ui-bg_flat_0_aaaaaa_40x100.png) 50% 50% repeat;
+	opacity:    .30;
+	filter:     Alpha(Opacity=30);
+}
+
+.ui-widget-shadow {
+	background:            #AAAAAA url(../images/jquery/ui-bg_flat_0_aaaaaa_40x100.png) 50% 50% repeat-x;
+	opacity:               .30;
+	filter:                Alpha(Opacity=30);
+	-moz-border-radius:    0;
+	-webkit-border-radius: 0;
+	border-radius:         0;
+}
+
+/*  Windowed slider
+  ---------------------------------*/
+
+.ui-wslider {
+	width:   245px;
+	padding: 2px 2px 0;
+}
+
+.ui-wslider .ui-wslider-title {
+	margin:      0;
+	line-height: 12px;
+	text-align:  left;
+	/*display: none;*/
+}
+
+.ui-wslider-div .ui-wslider-buttonpane {
+	background-image: none;
+	margin:           7px 0 0 0;
+	padding:          0 7px;
+	border:       0;
+}
+
+.ui-wslider-div .ui-wslider-buttonpane button {
+	float:    right;
+	margin:   2px 2px 2px;
+	cursor:   pointer;
+	padding:  1px 1px 1px 1px;
+	width:    auto;
+	overflow: visible;
+	/*display: none;*/
+}
+
+.ui-wslider-div .ui-wslider-value .ui-wslider-alt-val {
+	margin:     5px 0 5px 5px;
+	text-align: left;
+}
+
+.ui-wslider-div .ui-wslider-value .ui-wslider-slider {
+	margin: 0 12px;
+}
+
+.ui-wslider-div .ui-wslider-grid .ui-wslider-slider {
+	margin:   0 12px;
+	position: relative;
+}
+
+.ui-wslider-div .ui-wslider-grid {
+	height:     12px;
+	margin-top: 5px;
+}
+
+.ui-wslider-div .ui-wslider-grid .ui-wslider-grid-span {
+	position: absolute;
+}
+
+/*  Timepicker
+  ---------------------------------*/
+
+.ui-timepicker-div .ui-widget-header {
+	margin-bottom: 8px;
+}
+
+.ui-timepicker-div dl {
+	text-align:   left;
+	padding-left: 5px;
+}
+
+.ui-timepicker-div dl dt {
+	height:        25px;
+	margin-bottom: -25px;
+}
+
+.ui-timepicker-div dl dd {
+	margin: 0 10px 10px 65px;
+}
+
+.ui-timepicker-div td {
+	font-size: 90%;
+}
+
+.ui-tpicker-grid-label {
+	background: none;
+	border:     none;
+	margin:     0;
+	padding:    0;
+}
+
+/* UI SPINNER
+----------------------------------*/
+
+/* IE/Win - Fix animation bug - #4615 */
+.ui-accordion {
+	width: 100%;
+}
+
+.ui-accordion .ui-accordion-li-fix {
+	display: inline;
+}
+
+.ui-accordion .ui-accordion-header-active {
+	border-bottom: 0 !important;
+}
+
+.ui-accordion .ui-accordion-header a {
+	display:   block;
+	font-size: 1em;
+	padding:   .5em .5em .5em .7em;
+}
+
+.ui-accordion .ui-accordion-header .ui-icon {
+	position:   absolute;
+	left:       .5em;
+	top:        50%;
+	margin-top: -8px;
+}
+
+.ui-accordion .ui-accordion-content-active {
+	display: block;
+}
+
+.ui-datepicker select.ui-datepicker-month, .ui-datepicker select.ui-datepicker-year {
+	width: 49%;
+}
+
+/* IE6 IFRAME FIX (taken from datepicker 1.5.3) */
+
+.ui-datepicker-cover {
+	position: absolute; /*must have*/
+	z-index:  -1; /*must have*/
+	filter:   mask(); /*must have*/
+	top:      -4px; /*must have*/
+	left:     -4px; /*must have*/
+	width:    200px; /*must have*/
+	height:   200px; /*must have*/
+}
+
+.ui-dialog .ui-dialog-titlebar {
+	text-align: left;
+}
+.ui-dialog .ui-dialog-title {
+	margin: .1em 16px .1em 0;
+}
+
+.ui-menu .ui-menu-item {
+	list-style-image: none;
+}
+
+.ui-widget {
+	font-family: verdana, sans-serif;
+	font-size:   11px;
+}
+
+.ui-widget .ui-widget {
+	font-size: 1em;
+}
+
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+	font-family: verdana, sans-serif;
+}
+
+.ui-widget-content {
+	border:     1px solid #A7A6AA;
+	background: #FFFFFF url(../images/jquery/ui-bg_flat_100_ffffff_40x100.png) 50% 50% repeat-x;
+	color:      #5281B6;
+}
+
+.ui-widget-content a {
+	color: #5281B6;
+}
+
+.ui-widget-header {
+	border:      1px solid #A7A6AA;
+	background:  #9BC7E8 url(../images/jquery/ui-bg_highlight-soft_55_9bc7e8_1x100.png) 50% 50% repeat-x;
+	color:       #5281B6;
+	font-size:   10px;
+}
+
+.ui-widget-header a {
+	color: #5281B6;
+}
+
+/* Interaction states
+----------------------------------*/
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+	border:      1px solid #A7A6AA;
+	background:  #FFFFFF url(../images/jquery/ui-bg_glass_85_ffffff_1x400.png) 50% 50% repeat-x;
+	color:       #5281B6;
+}
+
+.ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited {
+	color:           #5281B6;
+}
+
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
+	border:      1px solid #A7A6AA;
+	background:  #FFFFFF url(../images/jquery/ui-bg_glass_75_ffffff_1x400.png) 50% 50% repeat-x;
+	color:       #5281B6;
+}
+
+.ui-state-hover a, .ui-state-hover a:hover {
+	color:           #5281B6;
+}
+
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active {
+	border:      1px solid #A7A6AA;
+	color:       #E17009;
+	background: #FFFFFF;
+}
+
+.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited {
+	color:           #E17009;
+	text-decoration: none;
+}
+
+.ui-widget :active {
+	outline: none;
+}
+
+/* Interaction Cues
+----------------------------------*/
+
+.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight {
+	border:     1px solid #A7A6AA;
+	background: #FBEC88 url(../images/jquery/ui-bg_flat_55_fbec88_40x100.png) 50% 50% repeat-x;
+	color:      #363636;
+}
+
+.ui-state-highlight a, .ui-widget-content .ui-state-highlight a, .ui-widget-header .ui-state-highlight a {
+	color: #363636;
+}
+
+.ui-state-error, .ui-widget-content .ui-state-error, .ui-widget-header .ui-state-error {
+	border:     1px solid #A7A6AA;
+	background: #FEF1EC url(../images/jquery/ui-bg_glass_95_fef1ec_1x400.png) 50% 50% repeat-x;
+	color:      #CD0A0A;
+}
+
+.ui-state-error a, .ui-widget-content .ui-state-error a, .ui-widget-header .ui-state-error a {
+	color: #CD0A0A;
+}
+
+.ui-state-error-text, .ui-widget-content .ui-state-error-text, .ui-widget-header .ui-state-error-text {
+	color: #CD0A0A;
+}
+
+.ui-priority-primary, .ui-widget-content .ui-priority-primary, .ui-widget-header .ui-priority-primary {
+	font-weight: bold;
+}
+
+
+.ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled {
+	background: #9DB9C8 none;
+	opacity: 1;
+	filter: Alpha(Opacity=100);
+}
