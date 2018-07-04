@@ -45,6 +45,13 @@
 						max: moment().add(1, "month")
 					}
 				);
+
+			$("#date-picker3").DateTimePicker({
+				allow:{
+					months: 'MM/Y',
+					days: "DD/MM/Y"
+				}
+			});
 		}
 	);
 </script>
@@ -52,14 +59,20 @@
 <div class="example">
 	<h1>Example 1</h1>
 	<h2>Date + Time - Inline Selector</h2>
-	<input placeholder="datepicker" id="date-picker1" type="text" />
+	<input placeholder="Inline Date+Time Picker" id="date-picker1" type="text" />
 </div>
 
 
 <div class="example">
 	<h1>Example 2</h1>
 	<h2>Date without time limited to a month before and a month after today</h2>
-	<input placeholder="datepicker" id="date-picker2" type="text" />
+	<input placeholder="Limited Interval Picker" id="date-picker2" type="text" />
+</div>
+
+<div class="example">
+	<h1>Example 3</h1>
+	<h2>Date Picker - Possible outputs are months and days</h2>
+	<input placeholder="Multiple Outputs Picker" id="date-picker3" type="text" />
 </div>
 
 </body>

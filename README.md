@@ -6,6 +6,7 @@ A customizable date-time-picker using jQuery + jQuery-ui and moment.js.
 1. **Date/Time picker:** Picker allows selecting both date and time values. Time value is a text field; will be validated according to `formatTime` (see Options).
 2. **Day/Month/Year selection:** `formatDate` defines which parts of a date is selectable. by omitting month or day formats from it, the output would be limited to year and month values resepectively.
 3. **Inline Display:** Picker can be used as an inline selector.
+4. 
 
 
 ## Usage
@@ -17,6 +18,11 @@ Please refer to `./examples/index.html` for some examples.
 3. [moment.js](http://momentjs.com)
 
 ## Options
+
+### `allow`: 
+if set, it should be an object with `$.DateTimePicker.views` values as keys, and acceptable `moment.js` formats as values, which will then allow setting output on different views - default = `null`
+
+`null` value will force the plugin to check for the lowest possible view form (`time, days, months, years`), and create an automatic `allow` entry based on `formatDate` and `formatTime` options.
 
 ### `buttons`: 
 an array containing buttons ready to be appended to the placeholder - default: `null`
