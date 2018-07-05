@@ -12,6 +12,8 @@
 		let base = this;
 
 		base.blurTimeout = null;
+		base.timeChangeTimeout = null;
+		base.setByPlugin = false;
 
 		// Access to jQuery and DOM versions of element
 		base.$el = $(el);
@@ -28,6 +30,24 @@
 			}
 		};
 
+		let keys = {
+			left: 37,
+			up: 38,
+			right: 39,
+			down: 40,
+			tab: 9,
+			enter: 13,
+			capsLock: 20,
+			backspace: 8,
+			numLock: 144
+		};
+
+		function isKeyDirectional(evt)
+		{
+			let which = evt.which;
+
+			return ([keys.left, keys.right, keys.up, keys.down].indexOf(which) != -1);
+		}
 		function isTargetInBase($target, $placeholder)
 		{
 			if(typeof $placeholder === typeof void 0)
@@ -166,6 +186,32 @@
 			return format.join(' ');
 		};
 
+		base.matchValueView = function(datetime){
+			let result = {
+				view: null,
+				datetime: null
+			};
+			for (let v  = 0; v < $.DateTimePicker.views.length; v++)
+			{
+				let view = $.DateTimePicker.views[v];
+				let format =  base.getCompleteFormat(view);
+
+				if (format)
+				{
+					let d = moment(datetime, format);
+
+					if (d.isValid())
+					{
+						result.view = view;
+						result.datetime = d;
+						break;
+					}
+				}
+			}
+
+			return result;
+		};
+
 		base.getDateTime = function (){
 			let datetime = null;
 
@@ -176,10 +222,10 @@
 
 			if(!(datetime instanceof moment))
 			{
-				datetime = moment(datetime, base.getCompleteFormat());
+				datetime = base.matchValueView(datetime).datetime;
 			}
 
-			if(!datetime.isValid())
+			if(!datetime || !datetime.isValid())
 			{
 				datetime = moment();
 			}
@@ -239,6 +285,14 @@
 						$timeInput.val(moment()
 							.format(base.options.formatTime));
 					}
+					else
+					{
+						if (base.$el.val())
+						{
+							$timeInput.val(base.getDateTime()
+								.format(base.options.formatTime));
+						}
+					}
 				}
 			}
 
@@ -265,7 +319,17 @@
 		base.getView = function (view, offset){
 			if(typeof view === typeof void 0)
 			{
-				view = base.options.view;
+				let datetime  = base.$el.val();
+
+				if (datetime)
+				{
+					view = base.matchValueView(datetime).view;
+				}
+
+				if (!view)
+				{
+					view = base.options.view;
+				}
 			}
 
 			if(typeof offset === typeof void 0)
@@ -843,7 +907,9 @@
 					break;
 
 				default:
+					base.setByPlugin = true;
 					base.events.set.call(base, base.$el, current, view);
+					base.setByPlugin = false;
 					base.showCalendar(current, base.getView(view, -1));
 					break;
 				}
@@ -881,6 +947,20 @@
 					base.options.allow[key] = base.getCompleteFormat();
 				}
 			}
+
+			base.$el.on(
+				"change keyup",
+				function (evt){
+					if (evt.which && isKeyDirectional(evt.which))
+					{
+						return;
+					}
+
+					if (!base.setByPlugin)
+					{
+						base.showCalendar(base.getDateTime());
+					}
+				});
 
 			base.$el.on(
 				"focus", function (){
@@ -931,7 +1011,7 @@
 				let $target = $(evt.target);
 				if(!base.isDisabled($target))
 				{
-					base.handleActions(event, $target);
+					base.handleActions(evt, $target);
 				}
 			}
 
@@ -945,7 +1025,21 @@
 			base.getPlaceholder().find('.datetimepicker-time').on(
 				"keyup change",
 				function(evt){
-					handleChanges(evt);
+					if (evt.which && isKeyDirectional(evt.which))
+					{
+						return;
+					}
+					if (base.timeChangeTimeout)
+					{
+						clearTimeout(base.timeChangeTimeout);
+					}
+
+					base.timeChangeTimeout = setTimeout(
+						function(){
+							handleChanges(evt);
+						},
+						1000
+					);
 				}
 			);
 
