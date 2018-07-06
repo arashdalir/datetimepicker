@@ -178,7 +178,7 @@
 				format.push(base.options.formatDate);
 			}
 
-			if(base.has('days', format[0]) && !base.has('time', format[0]) && base.options.formatTime)
+			if(format.length && base.has('days', format[0]) && !base.has('time', format[0]) && base.options.formatTime)
 			{
 				format.push(base.options.formatTime);
 			}
@@ -378,7 +378,7 @@
 			return view;
 		};
 
-		base.isBetweenRange = function (viewDay){
+		base.isBetweenRange = function (viewDay, view){
 			if(!moment.isMoment(viewDay))
 			{
 				viewDay = moment(viewDay, base.getCompleteFormat());
@@ -394,9 +394,25 @@
 			{
 				ret = true;
 
+				let precision = null;
+				switch(view)
+				{
+				case 'days':
+					precision = 'day';
+					break;
+
+				case 'months':
+					precision = 'month';
+					break;
+
+				case 'years':
+					precision = 'year';
+					break;
+				}
+
 				if(base.options.min)
 				{
-					if(viewDay.isBefore(moment(base.options.min, base.options.formatDate), 'day'))
+					if(viewDay.isBefore(moment(base.options.min, base.options.formatDate), precision))
 					{
 						ret = false;
 					}
@@ -404,7 +420,7 @@
 
 				if(base.options.max)
 				{
-					if(viewDay.isAfter(moment(base.options.max, base.options.formatDate), 'day'))
+					if(viewDay.isAfter(moment(base.options.max, base.options.formatDate), precision))
 					{
 						ret = false;
 					}
@@ -504,7 +520,7 @@
 
 				$day.addClass(classes.join(' '));
 
-				if(!base.isBetweenRange(viewDay))
+				if(!base.isBetweenRange(viewDay, "days"))
 				{
 					base.disableCell($day);
 				}
@@ -560,7 +576,7 @@
 
 						if(checkDate)
 						{
-							if(!base.isBetweenRange(checkDate))
+							if(!base.isBetweenRange(checkDate, "days"))
 							{
 								base.disableCell($cell);
 							}
@@ -626,7 +642,7 @@
 					classes.push('ui-state-active');
 				}
 
-				if(!base.isBetweenRange(monthBegin) && !base.isBetweenRange(monthEnd))
+				if(!base.isBetweenRange(monthBegin, "months") && !base.isBetweenRange(monthEnd, "months"))
 				{
 					base.disableCell($month);
 				}
@@ -675,7 +691,7 @@
 
 						if(checkDate)
 						{
-							if(!base.isBetweenRange(checkDate))
+							if(!base.isBetweenRange(checkDate, "months"))
 							{
 								base.disableCell($cell);
 							}
@@ -745,7 +761,7 @@
 					classes.push('ui-state-active');
 				}
 
-				if(!base.isBetweenRange(yearBegin) && !base.isBetweenRange(yearEnd))
+				if(!base.isBetweenRange(yearBegin, "years") && !base.isBetweenRange(yearEnd, "years"))
 				{
 					base.disableCell($year);
 				}
@@ -794,7 +810,7 @@
 
 						if(checkDate)
 						{
-							if(!base.isBetweenRange(checkDate))
+							if(!base.isBetweenRange(checkDate, "years"))
 							{
 								base.disableCell($cell);
 							}
@@ -1178,7 +1194,10 @@
 		},
 		set: function ($el, datetime, view){
 			let format = this.getCompleteFormat(view);
-			$el.val(datetime.format(format));
+			if (format)
+			{
+				$el.val(datetime.format(format));
+			}
 		}
 	};
 
