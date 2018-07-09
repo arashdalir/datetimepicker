@@ -19,6 +19,8 @@
 		base.$el = $(el);
 		base.el = el;
 
+		base.hooks = {};
+
 		// Add a reverse reference to the DOM object
 		base.$el.data("DateTimePicker", base);
 
@@ -48,6 +50,7 @@
 
 			return ([keys.left, keys.right, keys.up, keys.down].indexOf(which) != -1);
 		}
+
 		function isTargetInBase($target, $placeholder)
 		{
 			if(typeof $placeholder === typeof void 0)
@@ -66,6 +69,52 @@
 				return null;
 			}
 		}
+
+		base.callHook = function (hook, ...args)
+		{
+			if (base.hooks)
+			{
+				if (base.hooks.hasOwnProperty(hook))
+				{
+					base.hooks[hook].call(base, args);
+				}
+			}
+		};
+
+		base.runCommand = function (command, options){
+			switch(command)
+			{
+			case 'options':
+				base.options = $.extend({}, base.options, options);
+				break;
+
+			case "hooks":
+				if(typeof options === typeof {})
+				{
+					for(let event in options)
+					{
+						if(options.hasOwnProperty(event))
+						{
+							let callback = options[event];
+
+							if(typeof callback === typeof function (){
+							})
+							{
+								base.hooks[event] = callback;
+								base.$el.on(
+									event,
+									function (evt){
+										base.callHook(event, base, evt);
+									}
+								)
+							}
+							break;
+						}
+					}
+				}
+				break;
+			}
+		};
 
 		base.isDisabled = function ($target){
 			return ($target.is('disabled') || $target.hasClass('datetimepicker-disabled'));
@@ -186,21 +235,21 @@
 			return format.join(' ');
 		};
 
-		base.matchValueView = function(datetime){
+		base.matchValueView = function (datetime){
 			let result = {
 				view: null,
 				datetime: null
 			};
-			for (let v  = 0; v < $.DateTimePicker.views.length; v++)
+			for(let v = 0; v < $.DateTimePicker.views.length; v++)
 			{
 				let view = $.DateTimePicker.views[v];
-				let format =  base.getCompleteFormat(view);
+				let format = base.getCompleteFormat(view);
 
-				if (format)
+				if(format)
 				{
 					let d = moment(datetime, format);
 
-					if (d.isValid())
+					if(d.isValid())
 					{
 						result.view = view;
 						result.datetime = d;
@@ -287,7 +336,7 @@
 					}
 					else
 					{
-						if (base.$el.val())
+						if(base.$el.val())
 						{
 							$timeInput.val(base.getDateTime()
 								.format(base.options.formatTime));
@@ -319,14 +368,14 @@
 		base.getView = function (view, offset){
 			if(typeof view === typeof void 0)
 			{
-				let datetime  = base.$el.val();
+				let datetime = base.$el.val();
 
-				if (datetime)
+				if(datetime)
 				{
 					view = base.matchValueView(datetime).view;
 				}
 
-				if (!view)
+				if(!view)
 				{
 					view = base.options.view;
 				}
@@ -867,7 +916,7 @@
 					break;
 
 				case 'time':
-					if (["change", "keyup"].indexOf(event.type)=== -1)
+					if(["change", "keyup"].indexOf(event.type) === -1)
 					{
 						return;
 					}
@@ -933,7 +982,13 @@
 		};
 
 		base.init = function (){
-			let events = options.events;
+			let events = {};
+
+			if(options.hasOwnProperty('events'))
+			{
+				events = options.events;
+			}
+
 			base.options = $.extend({}, $.DateTimePicker.defaultOptions, options);
 			base.events = $.extend({}, $.DateTimePicker.defaultEvents, events);
 
@@ -967,12 +1022,12 @@
 			base.$el.on(
 				"change keyup",
 				function (evt){
-					if (evt.which && isKeyDirectional(evt.which))
+					if(evt.which && isKeyDirectional(evt.which))
 					{
 						return;
 					}
 
-					if (!base.setByPlugin)
+					if(!base.setByPlugin)
 					{
 						base.showCalendar(base.getDateTime());
 					}
@@ -998,10 +1053,10 @@
 			$(document)
 				.on(
 					"click",
-					function(evt){
+					function (evt){
 						let $target = $(evt.target);
 
-						if ($target.get(0) !== base.$el.get(0) && !isTargetInBase($target, base.getPlaceholder()))
+						if($target.get(0) !== base.$el.get(0) && !isTargetInBase($target, base.getPlaceholder()))
 						{
 							base.$el.blur();
 						}
@@ -1038,26 +1093,28 @@
 						handleChanges(evt);
 					}
 				);
-			base.getPlaceholder().find('.datetimepicker-time').on(
-				"keyup change",
-				function(evt){
-					if (evt.which && isKeyDirectional(evt.which))
-					{
-						return;
-					}
-					if (base.timeChangeTimeout)
-					{
-						clearTimeout(base.timeChangeTimeout);
-					}
+			base.getPlaceholder()
+				.find('.datetimepicker-time')
+				.on(
+					"keyup change",
+					function (evt){
+						if(evt.which && isKeyDirectional(evt.which))
+						{
+							return;
+						}
+						if(base.timeChangeTimeout)
+						{
+							clearTimeout(base.timeChangeTimeout);
+						}
 
-					base.timeChangeTimeout = setTimeout(
-						function(){
-							handleChanges(evt);
-						},
-						1000
-					);
-				}
-			);
+						base.timeChangeTimeout = setTimeout(
+							function (){
+								handleChanges(evt);
+							},
+							1000
+						);
+					}
+				);
 
 			if(base.options.trigger)
 			{
@@ -1194,22 +1251,41 @@
 		},
 		set: function ($el, datetime, view){
 			let format = this.getCompleteFormat(view);
-			if (format)
+			if(format)
 			{
 				$el.val(datetime.format(format));
 			}
+
+			this.callHook('change', this, $el, null, this.$el)
 		}
 	};
 
-	$.fn.DateTimePicker = function (options){
-		return this.each(function (){
-			(new $.DateTimePicker(this, options));
+	$.fn.DateTimePicker = function (command, options){
+		if(typeof command !== typeof "")
+		{
+			options = command;
+			command = null;
+		}
 
-			// HAVE YOUR PLUGIN DO STUFF HERE
+		if(typeof options === typeof void 0)
+		{
+			options = {};
+		}
 
-			// END DOING STUFF
-
-		});
+		if(command === null)
+		{
+			return this.each(function (){
+				(new $.DateTimePicker(this, options));
+			});
+		}
+		else
+		{
+			this.each(function (){
+				let $this = $(this);
+				let $plugin = $this.data("DateTimePicker");
+				$plugin.runCommand(command, options);
+			});
+		}
 	};
 
 })(jQuery);
