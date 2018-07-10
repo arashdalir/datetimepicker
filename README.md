@@ -38,20 +38,20 @@ Please refer to `./examples/index.html` for some examples.
 
 ## Options
 List: 
-- [`allow`](#`allow`)
-- [`buttons`](#`buttons`)
-- [`classes`](#`classes`)
-- [`debug`](#`debug`)
-- [`formatDate`](#`formatDate`)
-- [`formatTime`](#`formatTime`)
-- [`hooks`](#`hooks`)
-- [`inline`](#`inline`)
-- [`locale`](#`locale`)
-- [`max`](#`max`)
-- [`min`](#`min`)
-- [`position`](#`position`)
-- [`template`](#`template`)
-- [`view`](#`view`)
+- [`allow`](#allow)
+- [`buttons`](#buttons)
+- [`classes`](#classes)
+- [`debug`](#debug)
+- [`formatDate`](#formatDate)
+- [`formatTime`](#formatTime)
+- [`hooks`](#hooks)
+- [`inline`](#inline)
+- [`locale`](#locale)
+- [`max`](#max)
+- [`min`](#min)
+- [`position`](#position)
+- [`template`](#template)
+- [`view`](#view)
  
 ### `allow`
 if set, it should be an object with `$.DateTimePicker.views` values as keys, and acceptable `moment.js` formats as values, which will then allow setting output on different views - default = `null`
