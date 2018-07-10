@@ -13,6 +13,11 @@
 			clear:   both;
 			display: table;
 		}
+
+		.bold-extra .datetimepicker-extra{
+			color: #ff0000;
+			font-weight: bold;
+		}
 	</style>
 </head>
 <body>
@@ -121,7 +126,38 @@
 							}
 						});
 
+
+				$("#date-picker5")
+					.DateTimePicker({
+						allow:{
+							months: "Y-MM",
+							days: "Y-MM-DD",
+						},
+						classes: 'bold-extra',
+						hooks: {
+							showCalendar: function($placeholder, view)
+							{
+								switch(view)
+								{
+								case 'days':
+									$placeholder.find(".datetimepicker-extra").html("Click on a day to select").show();
+									break;
+
+								case 'months':
+									$placeholder.find(".datetimepicker-extra").html("Click on a month to select").show();
+									break;
+
+								default:
+									view = view.charAt(0).toUpperCase() + view.substr(1);
+									$placeholder.find(".datetimepicker-extra").html(view + " is not selectable!").show();
+									break;
+								}
+							}
+						}
+					});
+
 			}
+
 		);
 </script>
 
@@ -147,8 +183,14 @@
 <div class="example">
 	<h1>Example 4</h1>
 	<h2>Date Interval Picker</h2>
-	<input placeholder="start_range" id="date-picker4-1" class="date-range data-min" type="text"/> -
-	<input placeholder="end_range" id="date-picker4-2" class="date-range data-max" type="text"/>
+	<input placeholder="First Day" id="date-picker4-1" class="date-range data-min" type="text"/> -
+	<input placeholder="Last Day" id="date-picker4-2" class="date-range data-max" type="text"/>
+</div>
+
+<div class="example">
+	<h1>Example 5</h1>
+	<h2>Date Picker with an "extra" touch!</h2>
+	<input placeholder="" id="date-picker5" type="text"/>
 </div>
 
 </body>

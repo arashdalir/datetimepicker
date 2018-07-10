@@ -76,7 +76,7 @@
 			{
 				if (base.hooks.hasOwnProperty(hook))
 				{
-					base.hooks[hook].call(base, args);
+					base.hooks[hook].apply(base, args);
 				}
 			}
 		};
@@ -205,8 +205,15 @@
 
 					base.$el.after(appendTo);
 				}
+
+				if (base.options.classes)
+				{
+					$placeholder.addClass(base.options.classes);
+				}
+
 				$placeholder
 					.appendTo(appendTo);
+
 				base.$el.data(base.constants.data.placeholder, $placeholder);
 			}
 
@@ -360,6 +367,8 @@
 
 				$buttons.show();
 			}
+
+			base.callHook("showCalendar", $placeholder, view);
 
 			$placeholder.show()
 				.position(position);
@@ -894,7 +903,7 @@
 				case 'decade':
 					increment = 10;
 					unit = 'year';
-					view = 'years';
+					view = 'decades';
 					break;
 
 				case 'year':
@@ -992,6 +1001,11 @@
 			base.options = $.extend({}, $.DateTimePicker.defaultOptions, options);
 			base.events = $.extend({}, $.DateTimePicker.defaultEvents, events);
 
+			if (base.options.hooks)
+			{
+				base.runCommand("hooks", base.options.hooks);
+			}
+
 			if(base.options.allow === null)
 			{
 				let key = null;
@@ -1082,6 +1096,8 @@
 				let $target = $(evt.target);
 				if(!base.isDisabled($target))
 				{
+					evt.preventDefault();
+					evt.stopPropagation();
 					base.handleActions(evt, $target);
 				}
 			}
@@ -1168,33 +1184,18 @@
 	$.DateTimePicker.views = [
 		'days',
 		'months',
-		'years'
+		'years',
+		'decades'
 	];
-
-	/*
-	$.DateTimePicker.calendars = {
-		gregorian: {
-			daysInMonth: function (year, month){
-				$.DateTimePicker.setLocale(this);
-				return moment([year, month])
-					.daysInMonth();
-			},
-			isLeapYear: function (year){
-				$.DateTimePicker.setLocale(this);
-				moment([year])
-					.isLeapYear();
-			}
-		}
-	};
-	*/
 
 	$.DateTimePicker.defaultOptions = {
 		allow: null,
 		buttons: null,
-		//calendar: $.DateTimePicker.calendars.gregorian,
+		classes: null,
 		debug: false,
 		formatDate: 'DD/MM/Y',
 		formatTime: 'H:mm:ss',
+		hooks: null,
 		inline: false,
 		locale: 'default',
 		max: null,
@@ -1231,6 +1232,7 @@
 			'<div class="datetimepicker-view datetimepicker-hours">' +
 			'<input class="datetimepicker-time" data-action="time" type="text" />' +
 			'</div>' +
+			'<div class="datetimepicker-view datetimepicker-extra"></div>' +
 			'<div class="datetimepicker-view datetimepicker-buttons"></div>' +
 			'</div>' +
 			'</div>',

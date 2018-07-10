@@ -42,6 +42,7 @@
 .datetimepicker-weekdays .datetimepicker-flexcell,
 .datetimepicker-weekdays .datetimepicker-cell{
 	cursor: inherit;
+	border: 1px solid transparent;
 }
 
 .datetimepicker-cell{
