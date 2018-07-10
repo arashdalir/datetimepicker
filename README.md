@@ -25,7 +25,7 @@ Please download the [latest release](/releases/latest) from [Releases Section](/
 [⬆ back to top](#table-of-contents)
 
 ## Usage
-Please refer to [`./examples/index.html`](examples/index.html) for some examples.
+Please refer to [`examples/index.html`](examples/index.html) for some examples.
 
 [⬆ back to top](#table-of-contents)
 
