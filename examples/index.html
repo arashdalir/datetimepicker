@@ -14,8 +14,8 @@
 			display: table;
 		}
 
-		.bold-extra .datetimepicker-extra{
-			color: #ff0000;
+		.bold-extra .datetimepicker-extra {
+			color:       #FF0000;
 			font-weight: bold;
 		}
 	</style>
@@ -64,22 +64,26 @@
 
 				$(".date-range")
 					.DateTimePicker({
-						formatTime: null
-					});
-				$(".date-range")
-					.DateTimePicker(
-						"hooks",
-						{
-							"change": function (event){
-								if (this.$el.data("data-min") === void 0)
-								{
-									this.$el.data("data-min", this.options.min);
-								}
-								if (this.$el.data("data-max") === void 0)
+						formatTime: null,
+						min: moment().subtract(1, "month").format("DD/MM/Y"),
+						max: moment().add(1, "month").format("DD/MM/Y"),
+						hooks: {
+							init: function (){
+								if(typeof this.$el.data("data-max") === typeof void 0)
 								{
 									this.$el.data("data-max", this.options.max);
 								}
-
+								if(typeof this.$el.data("data-min") === typeof void 0)
+								{
+									this.$el.data("data-min", this.options.min);
+								}
+							}
+						}
+					})
+					.DateTimePicker(
+						"hooks",
+						{
+							"set": function (event){
 								let value = this.$el.val();
 								let $opposite = null;
 
@@ -93,7 +97,7 @@
 										value = $opposite.data('data-min');
 									}
 
-									if (typeof value === typeof void 0)
+									if(typeof value === typeof void 0)
 									{
 										value = null;
 									}
@@ -124,19 +128,26 @@
 									);
 								}
 							}
-						});
+						})
+					.on(
+						"change",
+						function (){
+							let $this = $(this);
+							let base = $this.data('DateTimePicker');
 
+							base.callHook("set", $this);
+						}
+					);
 
 				$("#date-picker5")
 					.DateTimePicker({
-						allow:{
+						allow: {
 							months: "Y-MM",
 							days: "Y-MM-DD",
 						},
 						classes: 'bold-extra',
 						hooks: {
-							showCalendar: function($placeholder, view)
-							{
+							showCalendar: function ($placeholder, view){
 								let $extra = $placeholder.find(".datetimepicker-extra");
 								switch(view)
 								{
@@ -151,7 +162,8 @@
 									break;
 
 								default:
-									view = view.charAt(0).toUpperCase() + view.substr(1);
+									view = view.charAt(0)
+										.toUpperCase() + view.substr(1);
 									$extra.html(view + " is not selectable!");
 									this.showView($extra);
 									break;
@@ -161,7 +173,6 @@
 					});
 
 			}
-
 		);
 </script>
 

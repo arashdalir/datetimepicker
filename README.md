@@ -155,17 +155,48 @@ can be any of `'days'`, `'months'`, `'years'`, `'decades'` respectively to begin
 ## Plugin Hooks
 Are used to extend the functionality of the plugin without the need to write parts of the code completely from the scratch.
 
-- [`change`](#`change`)
-- [`showCalendar`](#`showCalendar`)
+All the hook callbacks have the value "this" referring to the DateTimePicker object of that instance:
+```javascript
+/**
+* @internal this - refers to the DateTimePicker object, allows access to DateTimePicker functions
+*/
+```
 
-### `change`
-executed after the plugin has set the value.
+- [`init`](#init)
+- [`set`](#set)
+- [`showCalendar`](#showCalendar)
+
+### `init`
+executed at the end of initiation process - prototype:
+```javascript
+/**
+*/
+function init(){}
+```
 
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to hooks](#plugin-hooks)
 
+### `set`
+executed after the plugin has set the value - prototype: 
+```javascript
+/**
+* @param  $element - the jquery-ready html-element, onm which the set function has been executed
+*/
+function set($element){}
+```
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to hooks](#plugin-hooks)
+
 ### `showCalendar`
-executed before showing the calender widget
+executed before showing the calender widget - prototype:
+```javascript
+/**
+* @param $placeholder - the jquery-ready HTML of the calender-widget for current instance
+* @param view - which view is used for the preparation of widget
+*/
+function showCalendar($placeholder, view){}
+```
 
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to hooks](#plugin-hooks)

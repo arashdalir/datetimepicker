@@ -101,12 +101,6 @@
 							})
 							{
 								base.hooks[event] = callback;
-								base.$el.on(
-									event,
-									function (evt){
-										base.callHook(event, base, evt);
-									}
-								)
 							}
 							break;
 						}
@@ -1200,6 +1194,8 @@
 				base.getPlaceholder();
 				base.showCalendar();
 			}
+
+			base.callHook('init');
 		};
 
 		// Run initializer
@@ -1295,7 +1291,7 @@
 				$el.val(datetime.format(format));
 			}
 
-			this.callHook('change', this, $el, null, this.$el)
+			this.callHook('set', this, $el)
 		}
 	};
 
@@ -1324,6 +1320,8 @@
 				let $plugin = $this.data("DateTimePicker");
 				$plugin.runCommand(command, options);
 			});
+
+			return this;
 		}
 	};
 
