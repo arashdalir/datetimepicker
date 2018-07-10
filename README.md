@@ -20,7 +20,7 @@ A customizable date-time-picker using jQuery + jQuery-ui and moment.js.
 [⬆ back to top](#table-of-contents)
 
 ## Installation
-Please download the [latest release](/releases/latest) from [Releases Section](/releases), unzip it into your project and then take a look at the next section (Usage) for more information on how to use the plugin 
+Please download the [latest release](https://github.com/arashdalir/datetimepicker/releases/latest) from [Releases Section](https://github.com/arashdalir/datetimepicker/releases), unzip it into your project and then take a look at the next section (Usage) for more information on how to use the plugin 
 
 [⬆ back to top](#table-of-contents)
 
