@@ -44,6 +44,7 @@ List:
 - [`debug`](#`debug`)
 - [`formatDate`](#`formatDate`)
 - [`formatTime`](#`formatTime`)
+- [`hooks`](#`hooks`)
 - [`inline`](#`inline`)
 - [`locale`](#`locale`)
 - [`max`](#`max`)
@@ -92,7 +93,7 @@ for more information on available formats, please check [momentjs](http://moment
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to options](#options)
 
-### `hooks`:
+### `hooks`
 a list of hooks to be assigned to the instance - default: `null`
 
 [⬆ back to top](#table-of-contents) or 
@@ -151,7 +152,7 @@ can be any of `'days'`, `'months'`, `'years'`, `'decades'` respectively to begin
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to options](#options)
 
-## Hooks
+## Plugin Hooks
 Are used to extend the functionality of the plugin without the need to write parts of the code completely from the scratch.
 
 - [`change`](#`change`)
@@ -161,13 +162,13 @@ Are used to extend the functionality of the plugin without the need to write par
 executed after the plugin has set the value.
 
 [⬆ back to top](#table-of-contents) or 
-[⬅ back to hooks](#hooks)
+[⬅ back to hooks](#plugin-hooks)
 
 ### `showCalendar`
 executed before showing the calender widget
 
 [⬆ back to top](#table-of-contents) or 
-[⬅ back to hooks](#hooks)
+[⬅ back to hooks](#plugin-hooks)
 
 ## ToDos
  [ ] _Better `Options` Validation:_ invalid formats (for example `DD/Y` or `H:ss` should be detected and reported)
