@@ -8,7 +8,7 @@ A customizable date-time-picker using jQuery + jQuery-ui and moment.js.
 - [Installation](#installation)
 - [Dependencies](#dependencies)
 - [Options](#options)
-- [Hooks](#hooks)
+- [Hooks](#plugin-hooks)
 - [ToDos](#todos)
 - [License](#license)
 
