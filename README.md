@@ -185,6 +185,21 @@ executed after the plugin has set the value - prototype:
 */
 function set($element){}
 ```
+
+
+**NOTE:** this function is not executed on "change" events. to run it on change, please use an event-listener like:
+```javascript
+$('#example').DateTimePicker().on(
+	"change",
+	function (){
+		let $this = $(this);
+		let base = $this.data('DateTimePicker');
+
+		base.callHook("set", $this);
+	}
+);
+```
+
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to hooks](#plugin-hooks)
 
