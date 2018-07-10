@@ -170,13 +170,13 @@ executed before showing the calender widget
 [⬅ back to hooks](#hooks)
 
 ## ToDos
-[ ] _Better `Options` Validation:_ invalid formats (for example `DD/Y` or `H:ss` should be detected and reported)
+ [ ] _Better `Options` Validation:_ invalid formats (for example `DD/Y` or `H:ss` should be detected and reported)
 
-[ ] _Better Separation of View/Controller:_ the template and the controlling code are tightly coupled at the moment, but using constant values for placeholders and selectors will make it possible to customize the view even more.
+ [ ] _Better Separation of View/Controller:_ the template and the controlling code are tightly coupled at the moment, but using constant values for placeholders and selectors will make it possible to customize the view even more.
 
 ### Finished / Abandoned ToDos 
 
-[x] _Other Calendars' Support:_ for the time being, on gregorian calendar is supported. By adding an interface to moment.js functions, it is possible to define Add-ons for other calendars like `Jalali Calendar (Persian Calendar)`. -- Edit: this is already provided using plugins like [Jalaali Calendar Plugin](https://github.com/jalaali/moment-jalaali) or [Hijri Calendar Plugin](https://github.com/xsoh/moment-hijri). Please refer to [Plugins Section](https://momentjs.com/docs/#/plugins/) of Moment.js for more information.
+ [x] _Other Calendars' Support:_ for the time being, on gregorian calendar is supported. By adding an interface to moment.js functions, it is possible to define Add-ons for other calendars like `Jalali Calendar (Persian Calendar)`. -- Edit: this is already provided using plugins like [Jalaali Calendar Plugin](https://github.com/jalaali/moment-jalaali) or [Hijri Calendar Plugin](https://github.com/xsoh/moment-hijri). Please refer to [Plugins Section](https://momentjs.com/docs/#/plugins/) of Moment.js for more information.
 
 [⬆ back to top](#table-of-contents) 
 
