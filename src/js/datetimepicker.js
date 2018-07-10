@@ -247,20 +247,33 @@
 				view: null,
 				datetime: null
 			};
-			for(let v = 0; v < $.DateTimePicker.views.length; v++)
+
+			let rounds = 2;
+			let strict = true;
+
+			while(rounds)
 			{
-				let view = $.DateTimePicker.views[v];
-				let format = base.getCompleteFormat(view);
-
-				if(format)
+				if (!(--rounds))
 				{
-					let d = moment(datetime, format);
+					strict = false;
+				}
 
-					if(d.isValid())
+				for(let v = 0; v < $.DateTimePicker.views.length; v++)
+				{
+					let view = $.DateTimePicker.views[v];
+					let format = base.getCompleteFormat(view);
+
+					if(format)
 					{
-						result.view = view;
-						result.datetime = d;
-						break;
+						let d = moment(datetime, format, strict);
+
+						if(d.isValid())
+						{
+							result.view = view;
+							result.datetime = d;
+							rounds = 0;
+							break;
+						}
 					}
 				}
 			}
@@ -289,6 +302,34 @@
 			return datetime;
 		};
 
+		base.showView = function($view)
+		{
+			if (!($view instanceof jQuery))
+			{
+				// todo: alert that the item is not a valid instance
+			}
+			else
+			{
+				$view
+					.addClass("datetimepicker-visible")
+					.show()
+			}
+		};
+
+		base.hideView = function($view)
+		{
+			if (!($view instanceof jQuery))
+			{
+				// todo: alert that the item is not a valid instance
+			}
+			else
+			{
+				$view
+					.removeClass("datetimepicker-visible")
+					.hide();
+			}
+		};
+
 		base.showCalendar = function (datetime, view){
 			let position = base.options.position;
 
@@ -309,11 +350,8 @@
 
 			if(view)
 			{
-				$views.not('.datetimepicker-' + view)
-					.hide();
-				$($views)
-					.filter('.datetimepicker-' + view)
-					.show();
+				base.hideView($views.not('.datetimepicker-' + view));
+				base.showView($($views).filter('.datetimepicker-' + view));
 				switch(view)
 				{
 				case 'days':
@@ -332,7 +370,7 @@
 				if(view === 'days' && base.has('time', base.getCompleteFormat(view)))
 				{
 					let $timePicker = $views.filter('.datetimepicker-hours');
-					$timePicker.show();
+					base.showView($timePicker);
 
 					let $timeInput = $timePicker.find('.datetimepicker-time');
 
@@ -365,13 +403,13 @@
 					}
 				}
 
-				$buttons.show();
+				base.showView($buttons);
 			}
 
 			base.callHook("showCalendar", $placeholder, view);
 
-			$placeholder.show()
-				.position(position);
+			base.showView($placeholder);
+			$placeholder.position(position);
 		};
 
 		base.getView = function (view, offset){
@@ -1247,8 +1285,7 @@
 		hide: function (){
 			if(!this.options.inline)
 			{
-				this.getPlaceholder()
-					.hide();
+				this.hideView(this.getPlaceholder());
 			}
 		},
 		set: function ($el, datetime, view){

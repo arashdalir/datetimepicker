@@ -137,19 +137,23 @@
 						hooks: {
 							showCalendar: function($placeholder, view)
 							{
+								let $extra = $placeholder.find(".datetimepicker-extra");
 								switch(view)
 								{
 								case 'days':
-									$placeholder.find(".datetimepicker-extra").html("Click on a day to select").show();
+									$extra.html("Click on a day to select");
+									this.showView($extra);
 									break;
 
 								case 'months':
-									$placeholder.find(".datetimepicker-extra").html("Click on a month to select").show();
+									$extra.html("Click on a month to select");
+									this.showView($extra);
 									break;
 
 								default:
 									view = view.charAt(0).toUpperCase() + view.substr(1);
-									$placeholder.find(".datetimepicker-extra").html(view + " is not selectable!").show();
+									$extra.html(view + " is not selectable!");
+									this.showView($extra);
 									break;
 								}
 							}
