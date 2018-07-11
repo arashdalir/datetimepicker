@@ -1291,7 +1291,7 @@
 				$el.val(datetime.format(format));
 			}
 
-			this.callHook('set', this, $el)
+			this.callHook('set', this, $el, view)
 		}
 	};
 
