@@ -500,9 +500,11 @@
 					break;
 				}
 
+				let format = base.getCompleteFormat(view);
+
 				if(base.options.min)
 				{
-					if(viewDay.isBefore(moment(base.options.min, base.options.formatDate), precision))
+					if(viewDay.isBefore(moment(base.options.min, format), precision))
 					{
 						ret = false;
 					}
@@ -510,7 +512,7 @@
 
 				if(base.options.max)
 				{
-					if(viewDay.isAfter(moment(base.options.max, base.options.formatDate), precision))
+					if(viewDay.isAfter(moment(base.options.max, format), precision))
 					{
 						ret = false;
 					}
@@ -1291,7 +1293,7 @@
 				$el.val(datetime.format(format));
 			}
 
-			this.callHook('set', this, $el, view)
+			this.callHook('set', this, $el, view);
 		}
 	};
 
