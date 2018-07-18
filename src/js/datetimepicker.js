@@ -76,7 +76,19 @@
 			{
 				if (base.hooks.hasOwnProperty(hook))
 				{
-					base.hooks[hook].apply(base, args);
+					let hooks = base.hooks[hook];
+					if (typeof hooks !== typeof [])
+					{
+						hooks = [hooks];
+					}
+
+					for(let i = 0; i < hooks.length; i++)
+					{
+						if (typeof hooks[i] === typeof function(){})
+						{
+							hooks[i].apply(base, args);
+						}
+					}
 				}
 			}
 		};
@@ -100,7 +112,12 @@
 							if(typeof callback === typeof function (){
 							})
 							{
-								base.hooks[event] = callback;
+								if (typeof base.hooks[event] !== typeof [])
+								{
+									base.hooks[event] = [base.hooks[event]];
+								}
+
+								base.hooks[event].push(callback);
 							}
 							break;
 						}

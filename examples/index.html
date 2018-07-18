@@ -170,7 +170,15 @@
 								}
 							}
 						}
-					});
+					})
+					.DateTimePicker(
+						"hooks",
+						{
+							"showCalendar": function($placeholder, view){
+								console.log($placeholder, view);
+							}
+						}
+					);
 
 			}
 		);
