@@ -10,6 +10,7 @@
 		// To avoid scope issues, use 'base' instead of 'this'
 		// to reference this class from internal events and functions.
 		let base = this;
+		let hookStatus = [];
 
 		base.blurTimeout = null;
 		base.timeChangeTimeout = null;
@@ -86,7 +87,22 @@
 					{
 						if (typeof hooks[i] === typeof function(){})
 						{
-							hooks[i].apply(base, args);
+							if (!hookStatus.hasOwnProperty(hook))
+							{
+								hookStatus[hook] = [];
+							}
+
+							if (!hookStatus[hook].hasOwnProperty(i))
+							{
+								hookStatus[hook][i] = false;
+							}
+
+							if (!hookStatus[hook][i])
+							{
+								hookStatus[hook][i] = true;
+								hooks[i].apply(base, args);
+								hookStatus[hook][i] = false;
+							}
 						}
 					}
 				}
@@ -120,6 +136,22 @@
 								base.hooks[event].push(callback);
 							}
 							break;
+						}
+					}
+				}
+				break;
+
+			case 'exec':
+				if(typeof options === typeof {})
+				{
+					for(let event in options)
+					{
+						if(options.hasOwnProperty(event))
+						{
+							if (base.events.hasOwnProperty(event))
+							{
+								base.events[event].apply(this, options[event]);
+							}
 						}
 					}
 				}
@@ -1094,7 +1126,10 @@
 
 					if(!base.setByPlugin)
 					{
-						base.showCalendar(base.getDateTime());
+						let view = base.getView();
+						let datetime = base.getDateTime();
+						base.showCalendar(datetime);
+						base.callHook("set", base.$el, datetime, view);
 					}
 				});
 
@@ -1305,6 +1340,11 @@
 		},
 		set: function ($el, datetime, view){
 			let format = this.getCompleteFormat(view);
+			if (!moment.isMoment(datetime))
+			{
+				datetime = moment(datetime, format);
+			}
+
 			if(format)
 			{
 				$el.val(datetime.format(format));
