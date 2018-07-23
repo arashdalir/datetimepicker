@@ -71,33 +71,35 @@
 			}
 		}
 
-		base.callHook = function (hook, ...args)
+		base.callHook = function (hook,...args
+		)
 		{
-			if (base.hooks)
+			if(base.hooks)
 			{
-				if (base.hooks.hasOwnProperty(hook))
+				if(base.hooks.hasOwnProperty(hook))
 				{
 					let hooks = base.hooks[hook];
-					if (typeof hooks !== typeof [])
+					if(typeof hooks !== typeof [])
 					{
 						hooks = [hooks];
 					}
 
 					for(let i = 0; i < hooks.length; i++)
 					{
-						if (typeof hooks[i] === typeof function(){})
+						if(typeof hooks[i] === typeof function (){
+						})
 						{
-							if (!hookStatus.hasOwnProperty(hook))
+							if(!hookStatus.hasOwnProperty(hook))
 							{
 								hookStatus[hook] = [];
 							}
 
-							if (!hookStatus[hook].hasOwnProperty(i))
+							if(!hookStatus[hook].hasOwnProperty(i))
 							{
 								hookStatus[hook][i] = false;
 							}
 
-							if (!hookStatus[hook][i])
+							if(!hookStatus[hook][i])
 							{
 								hookStatus[hook][i] = true;
 								hooks[i].apply(base, args);
@@ -128,7 +130,7 @@
 							if(typeof callback === typeof function (){
 							})
 							{
-								if (typeof base.hooks[event] !== typeof [])
+								if(typeof base.hooks[event] !== typeof [])
 								{
 									base.hooks[event] = [base.hooks[event]];
 								}
@@ -148,7 +150,7 @@
 					{
 						if(options.hasOwnProperty(event))
 						{
-							if (base.events.hasOwnProperty(event))
+							if(base.events.hasOwnProperty(event))
 							{
 								base.events[event].apply(this, options[event]);
 							}
@@ -161,76 +163,6 @@
 
 		base.isDisabled = function ($target){
 			return ($target.is('disabled') || $target.hasClass('datetimepicker-disabled'));
-		};
-
-		base.has = function (token, formatDate){
-			let formatTime = null;
-			if(typeof formatDate === typeof void 0)
-			{
-				formatDate = base.options.formatDate;
-				formatTime = base.options.formatTime;
-			}
-			else
-			{
-				formatTime = formatDate;
-			}
-
-			let ret = false;
-
-			switch(token)
-			{
-			case 'days':
-				if(formatDate)
-				{
-					ret = formatDate.match(/D/);
-				}
-				break;
-
-			case 'months':
-				if(formatDate)
-				{
-					ret = formatDate.match(/M/);
-				}
-				break;
-
-			case 'years':
-				if(formatDate)
-				{
-					ret = formatDate.match(/Y/);
-				}
-				break;
-
-			case 'hours':
-				if(formatTime)
-				{
-					ret = base.has('days') && formatTime.match(/[hHkK]/);
-				}
-				break;
-
-			case 'minutes':
-				if(formatTime)
-				{
-					ret = base.has('days', formatDate) && formatTime.match(/m/);
-				}
-				break;
-
-			case 'seconds':
-				if(formatTime)
-				{
-					ret = base.has('days', formatDate) && formatTime.match(/s/);
-				}
-				break;
-
-			case 'date':
-				ret = base.has('days', formatDate) || base.has('months', formatDate) || base.has('years', formatDate);
-				break;
-
-			case 'time':
-				ret = base.has('hours', formatDate) || base.has('minutes', formatDate) || base.has('seconds', formatDate);
-				break;
-			}
-
-			return ret;
 		};
 
 		base.getPlaceholder = function (){
@@ -249,7 +181,7 @@
 					base.$el.after(appendTo);
 				}
 
-				if (base.options.classes)
+				if(base.options.classes)
 				{
 					$placeholder.addClass(base.options.classes);
 				}
@@ -272,14 +204,15 @@
 					format.push(base.options.allow[view]);
 				}
 			}
-			else
-			{
-				format.push(base.options.formatDate);
-			}
 
-			if(format.length && base.has('days', format[0]) && !base.has('time', format[0]) && base.options.formatTime)
+			if (view === 'days' && base.options.timepicker)
 			{
-				format.push(base.options.formatTime);
+				let $timeInput = base.getPlaceholder().find(".datetimepicker-time");
+
+				if (!$timeInput.attr("manual_unset"))
+				{
+					format.push(base.options.timepicker);
+				}
 			}
 
 			return format.join(' ');
@@ -296,7 +229,7 @@
 
 			while(rounds)
 			{
-				if (!(--rounds))
+				if(!(--rounds))
 				{
 					strict = false;
 				}
@@ -345,9 +278,8 @@
 			return datetime;
 		};
 
-		base.showView = function($view)
-		{
-			if (!($view instanceof jQuery))
+		base.showView = function ($view){
+			if(!($view instanceof jQuery))
 			{
 				// todo: alert that the item is not a valid instance
 			}
@@ -359,9 +291,8 @@
 			}
 		};
 
-		base.hideView = function($view)
-		{
-			if (!($view instanceof jQuery))
+		base.hideView = function ($view){
+			if(!($view instanceof jQuery))
 			{
 				// todo: alert that the item is not a valid instance
 			}
@@ -394,7 +325,8 @@
 			if(view)
 			{
 				base.hideView($views.not('.datetimepicker-' + view));
-				base.showView($($views).filter('.datetimepicker-' + view));
+				base.showView($($views)
+					.filter('.datetimepicker-' + view));
 				switch(view)
 				{
 				case 'days':
@@ -410,49 +342,52 @@
 					break;
 				}
 
-				if(view === 'days' && base.has('time', base.getCompleteFormat(view)))
+				if(view === 'days' && base.options.timepicker)
 				{
-					let $timePicker = $views.filter('.datetimepicker-hours');
+					let $timePicker = $views.filter('.datetimepicker-timepicker');
 					base.showView($timePicker);
 
 					let $timeInput = $timePicker.find('.datetimepicker-time');
 
-					if(!$timeInput.val())
+					if (!$timeInput.attr('manual_unset'))
 					{
-						$timeInput.val(moment()
-							.format(base.options.formatTime));
-					}
-					else
-					{
-						if(base.$el.val())
+						if(!$timeInput.val())
 						{
-							$timeInput.val(base.getDateTime()
-								.format(base.options.formatTime));
+							$timeInput.val(moment()
+								.format(base.options.timepicker));
+						}
+						else
+						{
+							if(base.$el.val())
+							{
+								$timeInput.val(base.getDateTime()
+									.format(base.options.timepicker));
+							}
 						}
 					}
 				}
-			}
 
-			if(base.options.buttons)
-			{
-				let $buttons = $views.filter('.datetimepicker-buttons');
-
-				for(let b in base.options.buttons)
+				if(base.options.buttons)
 				{
-					if(base.options.buttons.hasOwnProperty(b))
+					let $buttons = $views.filter('.datetimepicker-buttons');
+
+					for(let b in base.options.buttons)
 					{
-						let button = base.options.buttons[b];
-						$buttons.append(button);
+						if(base.options.buttons.hasOwnProperty(b))
+						{
+							let button = base.options.buttons[b];
+							$buttons.append(button);
+						}
 					}
+
+					base.showView($buttons);
 				}
 
-				base.showView($buttons);
+				base.callHook("showCalendar", $placeholder, view);
+
+				base.showView($placeholder);
+				$placeholder.position(position);
 			}
-
-			base.callHook("showCalendar", $placeholder, view);
-
-			base.showView($placeholder);
-			$placeholder.position(position);
 		};
 
 		base.getView = function (view, offset){
@@ -487,25 +422,6 @@
 					if($.DateTimePicker.views[index] !== void 0)
 					{
 						view = $.DateTimePicker.views[index];
-					}
-				}
-
-				if(!base.has(view))
-				{
-					if($.DateTimePicker.views[index + 1])
-					{
-						view = $.DateTimePicker.views[index + 1];
-					}
-					else
-					{
-						if($.DateTimePicker.views[index - 1])
-						{
-							view = $.DateTimePicker.views[index - 1];
-						}
-						else
-						{
-							view = null;
-						}
 					}
 				}
 			}
@@ -668,7 +584,7 @@
 				else
 				{
 					$day.attr('data-' + base.constants.data.action, action.join('|'));
-					$day.attr('data-' + base.constants.data.current, viewDay.format(base.options.formatDate));
+					$day.attr('data-' + base.constants.data.current, viewDay);
 				}
 
 				daysList.append($day);
@@ -692,7 +608,7 @@
 						let $cell = $(this);
 						$cell.removeData();
 
-						$cell.attr('data-' + base.constants.data.current, datetime.format(base.options.formatDate));
+						$cell.attr('data-' + base.constants.data.current, datetime);
 
 						let action = $cell.data(base.constants.data.action)
 							.split('|');
@@ -791,7 +707,7 @@
 				{
 					$month.attr('data-' + base.constants.data.action, 'month');
 
-					$month.attr('data-' + base.constants.data.current, month.format(base.options.formatDate));
+					$month.attr('data-' + base.constants.data.current, month);
 				}
 
 				$month.addClass(classes.join(" "));
@@ -805,7 +721,7 @@
 						let $cell = $(this);
 						$cell.removeData();
 
-						$cell.attr('data-' + base.constants.data.current, datetime.format(base.options.formatDate));
+						$cell.attr('data-' + base.constants.data.current, datetime);
 
 						let action = $cell.data(base.constants.data.action)
 							.split('|');
@@ -910,7 +826,7 @@
 				{
 					$year.attr('data-' + base.constants.data.action, 'year');
 
-					$year.attr('data-' + base.constants.data.current, year.format(base.options.formatDate));
+					$year.attr('data-' + base.constants.data.current, year);
 				}
 
 				$year.addClass(classes.join(" "));
@@ -924,7 +840,7 @@
 						let $cell = $(this);
 						$cell.removeData();
 
-						$cell.attr('data-' + base.constants.data.current, decadeBegin.format(base.options.formatDate));
+						$cell.attr('data-' + base.constants.data.current, decadeBegin);
 
 						let action = $cell.data(base.constants.data.action)
 							.split('|');
@@ -1025,19 +941,35 @@
 					current = moment(current, format);
 				}
 
-				if(base.has('time', format))
+				if(view === 'days' && base.options.timepicker)
 				{
-					let time = moment(
-						base.getPlaceholder()
-							.find('.datetimepicker-time')
-							.val(),
-						base.options.formatTime
-					);
 
-					current.hour(time.hour());
-					current.minute(time.minute());
-					current.second(time.second());
-					current.millisecond(time.millisecond());
+					let $timeInput = base.getPlaceholder()
+						.find('.datetimepicker-time');
+
+					if ($timeInput.val())
+					{
+						let time = moment($timeInput.val(), base.options.timepicker);
+						current.hour(time.hour());
+						current.minute(time.minute());
+						current.second(time.second());
+						current.millisecond(time.millisecond());
+
+
+						if (action[0] === 'time')
+						{
+							$timeInput.removeAttr('manual_unset');
+						}
+					}
+					else
+					{
+						if (action[0] === 'time')
+						{
+							$timeInput.attr('manual_unset', true);
+						}
+						format = base.getCompleteFormat(view);
+						current = moment(current.format(format), format);
+					}
 				}
 
 				switch(action[1])
@@ -1060,6 +992,10 @@
 					break;
 
 				case 'current':
+					if (view === 'decades')
+					{
+						view = 'years';
+					}
 					base.showCalendar(current, base.getView(view));
 					break;
 
@@ -1084,36 +1020,14 @@
 			base.options = $.extend({}, $.DateTimePicker.defaultOptions, options);
 			base.events = $.extend({}, $.DateTimePicker.defaultEvents, events);
 
-			if (base.options.hooks)
+			if(base.options.hooks)
 			{
 				base.runCommand("hooks", base.options.hooks);
 			}
 
 			if(base.options.allow === null)
 			{
-				let key = null;
-
-				switch(true)
-				{
-				case !!base.has("time"):
-				case !!base.has("days"):
-					key = "days";
-					break;
-
-				case !!base.has("months"):
-					key = "months";
-					break;
-
-				case !!base.has("years"):
-					key = "years";
-					break;
-				}
-
-				if(key)
-				{
-					base.options.allow = {};
-					base.options.allow[key] = base.getCompleteFormat();
-				}
+				// todo: throw error indicating the plugin has no allowed formats
 			}
 
 			base.$el.on(
@@ -1281,8 +1195,6 @@
 		buttons: null,
 		classes: null,
 		debug: false,
-		formatDate: 'DD/MM/Y',
-		formatTime: 'H:mm:ss',
 		hooks: null,
 		inline: false,
 		locale: 'default',
@@ -1317,13 +1229,14 @@
 			'<div class="datetimepicker-weekdays"></div>' +
 			'<div class="datetimepicker-list datetimepicker-list-days"></div>' +
 			'</div>' +
-			'<div class="datetimepicker-view datetimepicker-hours">' +
+			'<div class="datetimepicker-view datetimepicker-timepicker">' +
 			'<input class="datetimepicker-time" data-action="time" type="text" />' +
 			'</div>' +
 			'<div class="datetimepicker-view datetimepicker-extra"></div>' +
 			'<div class="datetimepicker-view datetimepicker-buttons"></div>' +
 			'</div>' +
 			'</div>',
+		timepicker: false,
 		trigger: null,
 		view: 'days'
 	};
@@ -1340,7 +1253,7 @@
 		},
 		set: function ($el, datetime, view){
 			let format = this.getCompleteFormat(view);
-			if (!moment.isMoment(datetime))
+			if(!moment.isMoment(datetime))
 			{
 				datetime = moment(datetime, format);
 			}

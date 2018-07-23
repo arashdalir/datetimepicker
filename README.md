@@ -42,8 +42,6 @@ List:
 - [`buttons`](#buttons)
 - [`classes`](#classes)
 - [`debug`](#debug)
-- [`formatDate`](#formatDate)
-- [`formatTime`](#formatTime)
 - [`hooks`](#hooks)
 - [`inline`](#inline)
 - [`locale`](#locale)
@@ -51,6 +49,8 @@ List:
 - [`min`](#min)
 - [`position`](#position)
 - [`template`](#template)
+- [`timepicker`](#timepicker)
+- [`trigger`](#trigger)
 - [`view`](#view)
  
 ### `allow`
@@ -140,6 +140,18 @@ please refer to [jQueryUi#position](https://jqueryui.com/position/) for more inf
 
 ### `template`
 HTML code representing the structure of placeholder and views.
+
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to options](#options)
+
+### `timepicker`
+If the plugin should show time-field in day-view - default: `false`, acceptable values are acceptable time formats of `moment.js`
+
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to options](#options)
+
+### `trigger`
+id defined, `show` action will be executed on `click`-event of the defined trigger.
 
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to options](#options)
