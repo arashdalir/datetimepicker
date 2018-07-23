@@ -73,8 +73,8 @@
 						allow:{
 							days: 'DD-MM-Y'
 						},
-						min: moment().subtract(1, "month").format("DD/MM/Y"),
-						max: moment().add(1, "month").format("DD/MM/Y"),
+						min: moment().subtract(1, "month"),
+						max: moment().add(1, "month"),
 						hooks: {
 							init: function (){
 								if(typeof this.$el.data("data-max") === typeof void 0)

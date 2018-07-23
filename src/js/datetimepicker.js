@@ -12,6 +12,8 @@
 		let base = this;
 		let hookStatus = [];
 
+		base.options = null;
+		base.events = null;
 		base.blurTimeout = null;
 		base.timeChangeTimeout = null;
 		base.setByPlugin = false;
@@ -71,9 +73,8 @@
 			}
 		}
 
-		base.callHook = function (hook,...args
-		)
-		{
+		base.callHook = function (hook, ...args
+		){
 			if(base.hooks)
 			{
 				if(base.hooks.hasOwnProperty(hook))
@@ -115,7 +116,7 @@
 			switch(command)
 			{
 			case 'options':
-				base.options = $.extend({}, base.options, options);
+				base.setOptions(options);
 				break;
 
 			case "hooks":
@@ -135,7 +136,10 @@
 									base.hooks[event] = [base.hooks[event]];
 								}
 
-								base.hooks[event].push(callback);
+								if (base.hooks[event].indexOf(callback) === -1)
+								{
+									base.hooks[event].push(callback);
+								}
 							}
 							break;
 						}
@@ -205,11 +209,12 @@
 				}
 			}
 
-			if (view === 'days' && base.options.timepicker)
+			if(view === 'days' && base.options.timepicker)
 			{
-				let $timeInput = base.getPlaceholder().find(".datetimepicker-time");
+				let $timeInput = base.getPlaceholder()
+					.find(".datetimepicker-time");
 
-				if (!$timeInput.attr("manual_unset"))
+				if(!$timeInput.attr("manual_unset"))
 				{
 					format.push(base.options.timepicker);
 				}
@@ -349,7 +354,7 @@
 
 					let $timeInput = $timePicker.find('.datetimepicker-time');
 
-					if (!$timeInput.attr('manual_unset'))
+					if(!$timeInput.attr('manual_unset'))
 					{
 						if(!$timeInput.val())
 						{
@@ -469,7 +474,7 @@
 
 				if(base.options.min)
 				{
-					if(viewDay.isBefore(moment(base.options.min, format), precision))
+					if(viewDay.isBefore(base.options.min, precision))
 					{
 						ret = false;
 					}
@@ -477,7 +482,7 @@
 
 				if(base.options.max)
 				{
-					if(viewDay.isAfter(moment(base.options.max, format), precision))
+					if(viewDay.isAfter(base.options.max, precision))
 					{
 						ret = false;
 					}
@@ -943,11 +948,17 @@
 
 				if(view === 'days' && base.options.timepicker)
 				{
+					let time = moment(
+						base.getPlaceholder()
+							.find('.datetimepicker-time')
+							.val(),
+						base.options.formatTime
+					);
 
 					let $timeInput = base.getPlaceholder()
 						.find('.datetimepicker-time');
 
-					if ($timeInput.val())
+					if($timeInput.val())
 					{
 						let time = moment($timeInput.val(), base.options.timepicker);
 						current.hour(time.hour());
@@ -955,15 +966,14 @@
 						current.second(time.second());
 						current.millisecond(time.millisecond());
 
-
-						if (action[0] === 'time')
+						if(action[0] === 'time')
 						{
 							$timeInput.removeAttr('manual_unset');
 						}
 					}
 					else
 					{
-						if (action[0] === 'time')
+						if(action[0] === 'time')
 						{
 							$timeInput.attr('manual_unset', true);
 						}
@@ -1009,7 +1019,7 @@
 			}
 		};
 
-		base.init = function (){
+		base.setOptions = function (options){
 			let events = {};
 
 			if(options.hasOwnProperty('events'))
@@ -1017,8 +1027,27 @@
 				events = options.events;
 			}
 
-			base.options = $.extend({}, $.DateTimePicker.defaultOptions, options);
-			base.events = $.extend({}, $.DateTimePicker.defaultEvents, events);
+			let currentOptions = (base.options === null)? $.DateTimePicker.defaultOptions:base.options;
+			let currentEvents = (base.events === null)? $.DateTimePicker.defaultEvents:base.events;
+			base.options = $.extend({}, currentOptions, options);
+			base.events = $.extend({}, currentEvents, events);
+
+			let min_max = ['min', 'max'];
+			for(let i in min_max)
+			{
+				i = min_max[i];
+
+				if(base.options.hasOwnProperty(i))
+				{
+					if(base.options[i])
+					{
+						if(!moment.isMoment(base.options[i]))
+						{
+							base.options[i] = base.matchValueView(base.options[i]).datetime;
+						}
+					}
+				}
+			}
 
 			if(base.options.hooks)
 			{
@@ -1029,6 +1058,10 @@
 			{
 				// todo: throw error indicating the plugin has no allowed formats
 			}
+		}
+
+		base.init = function(){
+			base.setOptions(options);
 
 			base.$el.on(
 				"change keyup",
