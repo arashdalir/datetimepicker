@@ -47,6 +47,71 @@
 			numLock: 144
 		};
 
+		function attachPlaceholderEvents(){
+			let $placeholder = base.getPlaceholder();
+
+			if (!$placeholder || !$placeholder.length)
+			{
+				return;
+			}
+
+			$placeholder.on(
+					'mouseover click',
+					function (evt){
+						let $target = $(evt.target);
+						evt.preventDefault();
+
+						if(base.blurTimeout)
+						{
+							clearTimeout(base.blurTimeout);
+						}
+					}
+				).on(
+					'click',
+					function (evt){
+						handleChanges(evt);
+					}
+				);
+
+			$placeholder.find('.datetimepicker-time')
+				.on(
+					"keyup change",
+					function (evt){
+						if(evt.which && isKeyDirectional(evt.which))
+						{
+							return;
+						}
+						if(base.timeChangeTimeout)
+						{
+							clearTimeout(base.timeChangeTimeout);
+						}
+
+						base.timeChangeTimeout = setTimeout(
+							function (){
+								handleChanges(evt);
+							},
+							1000
+						);
+					}
+				);
+		}
+
+		function setPlaceholder($placeholder)
+		{
+			base.$el.data(base.constants.data.placeholder, $placeholder);
+		}
+
+		function handleChanges(evt)
+		{
+			let $target = $(evt.target);
+			if(!base.isDisabled($target))
+			{
+				evt.preventDefault();
+				evt.stopPropagation();
+				base.handleActions(evt, $target);
+			}
+		}
+
 		function isKeyDirectional(evt)
 		{
 			let which = evt.which;
@@ -171,29 +236,36 @@
 
 		base.getPlaceholder = function (){
 			let $placeholder = base.$el.data(base.constants.data.placeholder);
-			if(typeof $placeholder === typeof void 0)
+			if(!$placeholder || typeof $placeholder === typeof void 0)
 			{
-				$placeholder = $(base.options.template);
-
-				let appendTo = 'body';
-				if(base.options.inline)
+				if (base.options.template)
 				{
-					appendTo = $("<div>")
-						.addClass("datetimepicker-inline")
-						.addClass("clearfix");
+					$placeholder = $(base.options.template);
 
-					base.$el.after(appendTo);
+					let appendTo = 'body';
+					if(base.options.inline)
+					{
+						appendTo = $("<div>")
+							.addClass("datetimepicker-inline")
+							.addClass("clearfix");
+
+						base.$el.after(appendTo);
+					}
+
+					if(base.options.classes)
+					{
+						$placeholder.addClass(base.options.classes);
+					}
+
+					$placeholder
+						.appendTo(appendTo);
+
+					setPlaceholder($placeholder);
 				}
-
-				if(base.options.classes)
+				else
 				{
-					$placeholder.addClass(base.options.classes);
+					$placeholder = $('');
 				}
-
-				$placeholder
-					.appendTo(appendTo);
-
-				base.$el.data(base.constants.data.placeholder, $placeholder);
 			}
 
 			return $placeholder;
@@ -1130,6 +1202,13 @@
 			{
 				// todo: throw error indicating the plugin has no allowed formats
 			}
+
+			if (currentOptions.template !== base.options.template)
+			{
+
+				setPlaceholder(null);
+				attachPlaceholderEvents();
+			}
 		};
 
 		base.init = function (){
@@ -1182,60 +1261,6 @@
 					}
 				);
 
-			base.getPlaceholder()
-				.on(
-					'mouseover click',
-					function (evt){
-						let $target = $(evt.target);
-						evt.preventDefault();
-
-						if(base.blurTimeout)
-						{
-							clearTimeout(base.blurTimeout);
-						}
-					}
-				);
-
-			function handleChanges(evt)
-			{
-				let $target = $(evt.target);
-				if(!base.isDisabled($target))
-				{
-					evt.preventDefault();
-					evt.stopPropagation();
-					base.handleActions(evt, $target);
-				}
-			}
-
-			base.getPlaceholder()
-				.on(
-					'click',
-					function (evt){
-						handleChanges(evt);
-					}
-				);
-			base.getPlaceholder()
-				.find('.datetimepicker-time')
-				.on(
-					"keyup change",
-					function (evt){
-						if(evt.which && isKeyDirectional(evt.which))
-						{
-							return;
-						}
-						if(base.timeChangeTimeout)
-						{
-							clearTimeout(base.timeChangeTimeout);
-						}
-
-						base.timeChangeTimeout = setTimeout(
-							function (){
-								handleChanges(evt);
-							},
-							1000
-						);
-					}
-				);
 
 			if(base.options.trigger)
 			{

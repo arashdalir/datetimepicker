@@ -199,8 +199,15 @@
 							months: "Y-MM",
 							weeks: "Y-[W]W",
 							days: "Y-MM-DD"
+						},
+						template: ''
+					})
+					.DateTimePicker(
+						'options',
+						{
+							template: $.DateTimePicker.defaultOptions.template
 						}
-					});
+					);
 			}
 		);
 </script>
