@@ -27,6 +27,11 @@ Please download the [latest release](https://github.com/arashdalir/datetimepicke
 ## Usage
 Please refer to [`examples/index.html`](examples/index.html) for some examples.
 
+### Usage Notes
+1. see [Note 1](#note1) about setting `options.allow`.
+2. see [Note 2](#note2) about selecting/displaying `weeks`.
+2. see [Note 3](#note3) about defining `options.template`.
+
 [⬆ back to top](#table-of-contents)
 
 ## Dependencies
@@ -42,6 +47,7 @@ List:
 - [`buttons`](#buttons)
 - [`classes`](#classes)
 - [`debug`](#debug)
+- [`displayWeeks`](#displayWeeks)
 - [`hooks`](#hooks)
 - [`inline`](#inline)
 - [`locale`](#locale)
@@ -56,7 +62,11 @@ List:
 ### `allow`
 if set, it should be an object with `$.DateTimePicker.views` values as keys, and acceptable `moment.js` formats as values, which will then allow setting output on different views - default = `null`
 
-`null` value will force the plugin to check for the lowest possible view form (`time, days, months, years`), and create an automatic `allow` entry based on `formatDate` and `formatTime` options.
+Refer to [note2](#note2) for more information about selecting/displaying `weeks`.
+
+#### Note1
+This option MUST be set for each instance in order to tell it which views are allowed and which values can be selected. IF no value is set (is with default value), no date/time can be picked and the picker will not drill down. 
+([read more notes](#usage-notes))
 
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to options](#options)
@@ -79,16 +89,11 @@ will force the placeholder to stay open after a blur or click outside the picker
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to options](#options)
 
-### `formatDate`
-format used for reading date from / writing date to the field - default: `'DD/MM/Y'`
+### `displayWeeks`
+Defines if plugin should show week numbers. 
 
-[⬆ back to top](#table-of-contents) or 
-[⬅ back to options](#options)
-
-### `formatTime`
-format used for reading date from / writing time to the field - set to `null` to disable time field - default: `'H:mm:ss'`
-
-for more information on available formats, please check [momentjs](http://momentjs.com)
+#### Note2
+if `weeks` is set in `options.allow`, then `displayWeeks` is automatically turned on, as selecting weeks is made possible by allowing users to click on the week numbers. ([read more notes](#usage-notes))
 
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to options](#options)
@@ -139,7 +144,15 @@ please refer to [jQueryUi#position](https://jqueryui.com/position/) for more inf
 [⬅ back to options](#options)
 
 ### `template`
-HTML code representing the structure of placeholder and views.
+HTML template for the plugin view - default is `null`
+
+#### Note3
+This value **MUST** be set for each instance or else the plugin will show nothing. As the plugin can be installed on any path, the option cannot have a working default value. Nevertheless, the value can be globally set using something like 
+
+```javascript
+$.DateTimePicker.defaultOptions.template = $.DateTimePicker.getTemplate('../src/html/datetimepicker.html');
+```
+There is a working template available in [src/html folder](/src/html/datetimepicker.html). Users can calculate its path and use the method mentioned above to set the option value. The [example page](/examples/index.html) shows this in action. ([read more notes](#usage-notes))
 
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to options](#options)
@@ -159,7 +172,7 @@ id defined, `show` action will be executed on `click`-event of the defined trigg
 ### `view`
 sets the view-level which is used when the picker is shown. default: `'days'`
 
-can be any of `'days'`, `'months'`, `'years'`, `'decades'` respectively to begin the selection from day, month, year or decade level.
+can be any of `'days'`, `'weeks'`, `'months'`, `'years'`, `'decades'` respectively to begin the selection from day, month, year or decade level.
 
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to options](#options)
@@ -231,11 +244,10 @@ function showCalendar($placeholder, view){}
 
 ## ToDos
  [ ] _Better `Options` Validation:_ invalid formats (for example `DD/Y` or `H:ss` should be detected and reported)
-
- [ ] _Better Separation of View/Controller:_ the template and the controlling code are tightly coupled at the moment, but using constant values for placeholders and selectors will make it possible to customize the view even more.
+ 
+ [ ] _Better Separation of View/Controller:_ the template and the controlling code are tightly coupled at the moment but using constant values for placeholders and selectors will make it possible to customize the view even more.
 
 ### Finished / Abandoned ToDos 
-
  [x] _Other Calendars' Support:_ for the time being, on gregorian calendar is supported. By adding an interface to moment.js functions, it is possible to define Add-ons for other calendars like `Jalali Calendar (Persian Calendar)`. -- Edit: this is already provided using plugins like [Jalaali Calendar Plugin](https://github.com/jalaali/moment-jalaali) or [Hijri Calendar Plugin](https://github.com/xsoh/moment-hijri). Please refer to [Plugins Section](https://momentjs.com/docs/#/plugins/) of Moment.js for more information.
 
 [⬆ back to top](#table-of-contents) 

@@ -1,7 +1,6 @@
 .datetimepicker-placeholder {
 	position: absolute;
 	box-sizing: border-box;
-	width:      18.5em;
 	display:    none;
 }
 
@@ -54,6 +53,7 @@
 
 .datetimepicker-list{
 	margin: 0.1em 0;
+	width:      18em;
 }
 
 .datetimepicker-prev,
@@ -140,4 +140,13 @@ body{
 	content: "";
 	clear: both;
 	display: table;
+}
+
+.datetimepicker-list-weeks{
+	width:2.5em;
+	display: inline-block;
+	border-right: 1px solid #999999;
+}
+.datetimepicker-days-holder{
+	display: inline-block;
 }

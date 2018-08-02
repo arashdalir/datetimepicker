@@ -73,8 +73,8 @@
 			}
 		}
 
-		base.callHook = function (hook, ...args
-		){
+		base.callHook = function (hook){
+			let args = Array.prototype.slice.call(arguments, 1);
 			if(base.hooks)
 			{
 				if(base.hooks.hasOwnProperty(hook))
@@ -136,7 +136,7 @@
 									base.hooks[event] = [base.hooks[event]];
 								}
 
-								if (base.hooks[event].indexOf(callback) === -1)
+								if(base.hooks[event].indexOf(callback) === -1)
 								{
 									base.hooks[event].push(callback);
 								}
@@ -239,21 +239,23 @@
 					strict = false;
 				}
 
-				for(let v = 0; v < $.DateTimePicker.views.length; v++)
+				for(let v in base.options.allow)
 				{
-					let view = $.DateTimePicker.views[v];
-					let format = base.getCompleteFormat(view);
-
-					if(format)
+					if (base.options.allow.hasOwnProperty(v))
 					{
-						let d = moment(datetime, format, strict);
+						let format = base.getCompleteFormat(v);
 
-						if(d.isValid())
+						if(format)
 						{
-							result.view = view;
-							result.datetime = d;
-							rounds = 0;
-							break;
+							let d = moment(datetime, format, strict);
+
+							if(d.isValid())
+							{
+								result.view = v;
+								result.datetime = d;
+								rounds = 0;
+								break;
+							}
 						}
 					}
 				}
@@ -329,23 +331,30 @@
 
 			if(view)
 			{
-				base.hideView($views.not('.datetimepicker-' + view));
-				base.showView($($views)
-					.filter('.datetimepicker-' + view));
+				let viewpoint = null;
+
 				switch(view)
 				{
 				case 'days':
-					base.showDaysPicker($placeholder, datetime);
+				case 'weeks':
+					base.showDaysPicker($placeholder, datetime, view);
+					viewpoint = 'days';
 					break;
 
 				case 'months':
-					base.showMonthsPicker($placeholder, datetime);
+					base.showMonthsPicker($placeholder, datetime, view);
+					viewpoint = 'months';
 					break;
 
 				case 'years':
-					base.showYearsPicker($placeholder, datetime);
+					base.showYearsPicker($placeholder, datetime, view);
+					viewpoint = 'years';
 					break;
 				}
+
+				base.hideView($views.not('.datetimepicker-' + viewpoint));
+				base.showView($($views)
+					.filter('.datetimepicker-' + viewpoint));
 
 				if(view === 'days' && base.options.timepicker)
 				{
@@ -504,7 +513,7 @@
 			$cell.removeProp('disabled');
 		};
 
-		base.showDaysPicker = function ($placeholder, datetime){
+		base.showDaysPicker = function ($placeholder, datetime, view){
 			let selectedDay = base.getDateTime();
 
 			if(typeof datetime === typeof void 0)
@@ -552,6 +561,49 @@
 				lastDay = monthEnd.clone();
 			}
 
+			let $weeks = $placeholder.find('.datetimepicker-list-weeks');
+			if(base.options.displayWeeks)
+			{
+				$weeks.html('');
+				let week = firstDay.clone();
+
+				for (; week.isSameOrBefore(lastDay); week.add(1, 'week'))
+				{
+					let $week = $("<div>")
+						.html(week.format('W'));
+
+					let classes = ['datetimepicker-cell'];
+					let action = ["week"];
+
+
+					if(view === 'weeks' && week.isSame(selectedDay, 'week'))
+					{
+						classes.push('datetimepicker-selected');
+						classes.push('ui-state-active');
+					}
+
+					$week.addClass(classes.join(' '));
+
+					$week.attr('data-' + base.constants.data.action, action.join('|'));
+					$week.attr('data-' + base.constants.data.current, week);
+
+					if(!base.isBetweenRange(week, "days"))
+					{
+						base.disableCell($week);
+					}
+					else
+					{
+						base.enableCell($week);
+					}
+
+					$weeks.append($week);
+				}
+			}
+			else
+			{
+				$weeks.hide();
+			}
+
 			let daysList =
 				$dayPicker.find('.datetimepicker-list-days');
 
@@ -574,7 +626,7 @@
 					classes.push('datetimepicker-today');
 				}
 
-				if(viewDay.isSame(selectedDay, 'day'))
+				if(view === 'days' && viewDay.isSame(selectedDay, 'day'))
 				{
 					classes.push('datetimepicker-selected');
 					classes.push('ui-state-active');
@@ -651,7 +703,7 @@
 				);
 		};
 
-		base.showMonthsPicker = function ($placeholder, datetime){
+		base.showMonthsPicker = function ($placeholder, datetime, view){
 			let selectedDay = base.getDateTime();
 
 			if(typeof datetime === typeof void 0)
@@ -766,7 +818,7 @@
 				);
 		};
 
-		base.showYearsPicker = function ($placeholder, datetime){
+		base.showYearsPicker = function ($placeholder, datetime, view){
 			let selectedDay = base.getDateTime();
 
 			if(typeof datetime === typeof void 0)
@@ -922,6 +974,12 @@
 					view = 'months';
 					break;
 
+				case 'week':
+					increment = 1;
+					unit = 'week';
+					view = 'weeks';
+					break;
+
 				case 'date':
 					increment = 1;
 					unit = 'day';
@@ -1002,7 +1060,7 @@
 					break;
 
 				case 'current':
-					if (view === 'decades')
+					if(view === 'decades')
 					{
 						view = 'years';
 					}
@@ -1010,10 +1068,19 @@
 					break;
 
 				default:
+					let offset = -1;
+					if (action[0] === 'week')
+					{
+						offset = 0;
+						if(!base.options.allow.hasOwnProperty('weeks'))
+						{
+							return;
+						}
+					}
 					base.setByPlugin = true;
 					base.events.set.call(base, base.$el, current, view);
 					base.setByPlugin = false;
-					base.showCalendar(current, base.getView(view, -1));
+					base.showCalendar(current, base.getView(view, offset));
 					break;
 				}
 			}
@@ -1049,6 +1116,11 @@
 				}
 			}
 
+			if (base.options.allow.hasOwnProperty('weeks') && !base.options.displayWeeks)
+			{
+				base.options.displayWeeks = true;
+			}
+
 			if(base.options.hooks)
 			{
 				base.runCommand("hooks", base.options.hooks);
@@ -1058,9 +1130,9 @@
 			{
 				// todo: throw error indicating the plugin has no allowed formats
 			}
-		}
+		};
 
-		base.init = function(){
+		base.init = function (){
 			base.setOptions(options);
 
 			base.$el.on(
@@ -1218,6 +1290,7 @@
 
 	$.DateTimePicker.views = [
 		'days',
+		'weeks',
 		'months',
 		'years',
 		'decades'
@@ -1228,6 +1301,7 @@
 		buttons: null,
 		classes: null,
 		debug: false,
+		displayWeeks: false,
 		hooks: null,
 		inline: false,
 		locale: 'default',
@@ -1235,40 +1309,7 @@
 		min: null,
 		position: null,
 		sticky: false,
-		template:
-			'<div class="ui-state-default datetimepicker-placeholder">' +
-			'<div class="datetimepicker-view datetimepicker-years">' +
-			'<div class="datetimepicker-line">' +
-			'<div class="datetimepicker-cell datetimepicker-prev" data-action="decade|prev"></div>' +
-			'<div class="datetimepicker-flexcell datetimepicker-current" data-action="decade|current"></div>' +
-			'<div class="datetimepicker-cell datetimepicker-next" data-action="decade|next"></div>' +
-			'</div>' +
-			'<div class="datetimepicker-list datetimepicker-list-years"></div>' +
-			'</div>' +
-			'<div class="datetimepicker-view datetimepicker-months">' +
-			'<div class="datetimepicker-line">' +
-			'<div class="datetimepicker-flexcell datetimepicker-prev" data-action="year|prev"></div>' +
-			'<div class="datetimepicker-flexcell datetimepicker-current" data-action="year|current"></div>' +
-			'<div class="datetimepicker-cell datetimepicker-next" data-action="year|next"></div>' +
-			'</div>' +
-			'<div class="datetimepicker-list datetimepicker-list-months"></div>' +
-			'</div>' +
-			'<div class="datetimepicker-view datetimepicker-days">' +
-			'<div class="datetimepicker-line">' +
-			'<div class="datetimepicker-cell datetimepicker-prev" data-action="month|prev"></div>' +
-			'<div class="datetimepicker-flexcell datetimepicker-current" data-action="month|current"></div>' +
-			'<div class="datetimepicker-cell datetimepicker-next" data-action="month|next"></div>' +
-			'</div>' +
-			'<div class="datetimepicker-weekdays"></div>' +
-			'<div class="datetimepicker-list datetimepicker-list-days"></div>' +
-			'</div>' +
-			'<div class="datetimepicker-view datetimepicker-timepicker">' +
-			'<input class="datetimepicker-time" data-action="time" type="text" />' +
-			'</div>' +
-			'<div class="datetimepicker-view datetimepicker-extra"></div>' +
-			'<div class="datetimepicker-view datetimepicker-buttons"></div>' +
-			'</div>' +
-			'</div>',
+		template: null,
 		timepicker: false,
 		trigger: null,
 		view: 'days'
@@ -1298,6 +1339,22 @@
 
 			this.callHook('set', $el, view);
 		}
+	};
+
+	$.DateTimePicker.getTemplate = function(path)
+	{
+		let template = null;
+
+		$.ajax({
+			url: path,
+			async: false,
+			success: function(html)
+			{
+				template = html;
+			}
+		});
+
+		return template;
 	};
 
 	$.fn.DateTimePicker = function (command, options){

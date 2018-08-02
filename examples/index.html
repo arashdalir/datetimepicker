@@ -30,15 +30,18 @@
 	$(document)
 		.ready(
 			function (){
+				$.DateTimePicker.defaultOptions.template = $.DateTimePicker.getTemplate('../src/html/datetimepicker.html');
 
 				$("#date-picker1")
 					.DateTimePicker(
 						{
 							allow:{
 								months: "MM-Y",
+								weeks: "[W]W-Y",
 								days: 'DD-MM-Y'
 							},
 							debug: false,
+							displayWeeks: true,
 							view: 'days',
 							inline: true,
 							timepicker: 'H:mm'
@@ -51,7 +54,7 @@
 							debug: true,
 							view: 'days',
 							allow: {
-								days: 'DD/MM/Y'
+								days: 'DD/MM/Y',
 							},
 							min: moment()
 								.subtract(1, "month"),
@@ -188,6 +191,16 @@
 						}
 					);
 
+
+				$("#date-picker6")
+					.DateTimePicker({
+						allow:{
+							years: 'Y',
+							months: "Y-MM",
+							weeks: "Y-[W]W",
+							days: "Y-MM-DD"
+						}
+					});
 			}
 		);
 </script>
@@ -222,6 +235,11 @@
 	<h1>Example 5</h1>
 	<h2>Date Picker with an "extra" touch!</h2>
 	<input placeholder="" id="date-picker5" type="text"/>
+</div>
+<div class="example">
+	<h1>Example 6</h1>
+	<h2>Year-, Month-, Week- and Day-Picker</h2>
+	<input placeholder="" id="date-picker6" type="text"/>
 </div>
 
 </body>
