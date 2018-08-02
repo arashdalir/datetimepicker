@@ -56,22 +56,22 @@
 			}
 
 			$placeholder.on(
-					'mouseover click',
-					function (evt){
-						let $target = $(evt.target);
-						evt.preventDefault();
+				'mouseover click',
+				function (evt){
+					let $target = $(evt.target);
+					evt.preventDefault();
 
-						if(base.blurTimeout)
-						{
-							clearTimeout(base.blurTimeout);
-						}
+					if(base.blurTimeout)
+					{
+						clearTimeout(base.blurTimeout);
 					}
-				).on(
-					'click',
-					function (evt){
-						handleChanges(evt);
-					}
-				);
+				}
+			).on(
+				'click',
+				function (evt){
+					handleChanges(evt);
+				}
+			);
 
 			$placeholder.find('.datetimepicker-time')
 				.on(
@@ -264,7 +264,7 @@
 				}
 				else
 				{
-					$placeholder = $('');
+					$placeholder = $(null);
 				}
 			}
 
