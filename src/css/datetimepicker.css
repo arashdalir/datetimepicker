@@ -38,6 +38,12 @@
 	vertical-align: top;
 }
 
+
+.datetimepicker-flexcell.not-selectable,
+.datetimepicker-cell.not-selectable {
+	cursor: inherit;
+}
+
 .datetimepicker-weekdays .datetimepicker-flexcell,
 .datetimepicker-weekdays .datetimepicker-cell{
 	cursor: inherit;

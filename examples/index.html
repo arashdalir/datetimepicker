@@ -54,7 +54,7 @@
 							debug: true,
 							view: 'days',
 							allow: {
-								days: 'DD/MM/Y',
+								days: 'DD/MM/Y'
 							},
 							min: moment()
 								.subtract(1, "month"),
@@ -154,7 +154,7 @@
 					.DateTimePicker({
 						allow: {
 							months: "Y-MM",
-							days: "Y-MM-DD",
+							days: "Y-MM-DD"
 						},
 						classes: 'bold-extra',
 						hooks: {
@@ -191,7 +191,6 @@
 						}
 					);
 
-
 				$("#date-picker6")
 					.DateTimePicker({
 						allow:{
@@ -199,15 +198,8 @@
 							months: "Y-MM",
 							weeks: "Y-[W]W",
 							days: "Y-MM-DD"
-						},
-						template: ''
-					})
-					.DateTimePicker(
-						'options',
-						{
-							template: $.DateTimePicker.defaultOptions.template
 						}
-					);
+					});
 			}
 		);
 </script>

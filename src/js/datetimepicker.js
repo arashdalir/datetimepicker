@@ -295,6 +295,11 @@
 			return format.join(' ');
 		};
 
+		base.allows = function(view)
+		{
+			return base.options.allow && base.options.allow.hasOwnProperty(view);
+		};
+
 		base.matchValueView = function (datetime){
 			let result = {
 				view: null,
@@ -304,29 +309,32 @@
 			let rounds = 2;
 			let strict = true;
 
-			while(rounds)
+			if (base.options.allow)
 			{
-				if(!(--rounds))
+				while(rounds)
 				{
-					strict = false;
-				}
-
-				for(let v in base.options.allow)
-				{
-					if (base.options.allow.hasOwnProperty(v))
+					if(!(--rounds))
 					{
-						let format = base.getCompleteFormat(v);
+						strict = false;
+					}
 
-						if(format)
+					for(let v in base.options.allow)
+					{
+						if (base.allows(v))
 						{
-							let d = moment(datetime, format, strict);
+							let format = base.getCompleteFormat(v);
 
-							if(d.isValid())
+							if(format)
 							{
-								result.view = v;
-								result.datetime = d;
-								rounds = 0;
-								break;
+								let d = moment(datetime, format, strict);
+
+								if(d.isValid())
+								{
+									result.view = v;
+									result.datetime = d;
+									rounds = 0;
+									break;
+								}
 							}
 						}
 					}
@@ -542,6 +550,10 @@
 					precision = 'day';
 					break;
 
+				case 'weeks':
+					precision = 'week';
+					break;
+
 				case 'months':
 					precision = 'month';
 					break;
@@ -647,11 +659,17 @@
 					let classes = ['datetimepicker-cell'];
 					let action = ["week"];
 
-
-					if(view === 'weeks' && week.isSame(selectedDay, 'week'))
+					if (base.allows('weeks'))
 					{
-						classes.push('datetimepicker-selected');
-						classes.push('ui-state-active');
+						if(view === 'weeks' && week.isSame(selectedDay, 'week'))
+						{
+							classes.push('datetimepicker-selected');
+							classes.push('ui-state-active');
+						}
+					}
+					else
+					{
+						classes.push('not-selectable');
 					}
 
 					$week.addClass(classes.join(' '));
@@ -659,7 +677,7 @@
 					$week.attr('data-' + base.constants.data.action, action.join('|'));
 					$week.attr('data-' + base.constants.data.current, week);
 
-					if(!base.isBetweenRange(week, "days"))
+					if(!base.isBetweenRange(week, "weeks"))
 					{
 						base.disableCell($week);
 					}
@@ -698,10 +716,17 @@
 					classes.push('datetimepicker-today');
 				}
 
-				if(view === 'days' && viewDay.isSame(selectedDay, 'day'))
+				if (base.allows('days'))
 				{
-					classes.push('datetimepicker-selected');
-					classes.push('ui-state-active');
+					if(view === 'days' && viewDay.isSame(selectedDay, 'day'))
+					{
+						classes.push('datetimepicker-selected');
+						classes.push('ui-state-active');
+					}
+				}
+				else
+				{
+					classes.push("not-selectable");
 				}
 
 				$day.addClass(classes.join(' '));
@@ -1143,16 +1168,16 @@
 					let offset = -1;
 					if (action[0] === 'week')
 					{
-						offset = 0;
-						if(!base.options.allow.hasOwnProperty('weeks'))
-						{
-							return;
-						}
+						offset = 0;				
 					}
-					base.setByPlugin = true;
-					base.events.set.call(base, base.$el, current, view);
-					base.setByPlugin = false;
-					base.showCalendar(current, base.getView(view, offset));
+
+					if(base.allows(view))
+					{
+						base.setByPlugin = true;
+						base.events.set.call(base, base.$el, current, view);
+						base.setByPlugin = false;
+						base.showCalendar(current, base.getView(view, offset));
+					}
 					break;
 				}
 			}
@@ -1164,6 +1189,13 @@
 			if(options.hasOwnProperty('events'))
 			{
 				events = options.events;
+			}
+
+			let initiateEvents = false;
+
+			if (!base.options)
+			{
+				initiateEvents = true;
 			}
 
 			let currentOptions = (base.options === null)? $.DateTimePicker.defaultOptions:base.options;
@@ -1188,7 +1220,7 @@
 				}
 			}
 
-			if (base.options.allow.hasOwnProperty('weeks') && !base.options.displayWeeks)
+			if (base.allows('weeks') && !base.options.displayWeeks)
 			{
 				base.options.displayWeeks = true;
 			}
@@ -1203,9 +1235,8 @@
 				// todo: throw error indicating the plugin has no allowed formats
 			}
 
-			if (currentOptions.template !== base.options.template)
+			if (initiateEvents || currentOptions.template !== base.options.template)
 			{
-
 				setPlaceholder(null);
 				attachPlaceholderEvents();
 			}
