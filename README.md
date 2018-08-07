@@ -14,8 +14,8 @@ A customizable date-time-picker using jQuery + jQuery-ui and moment.js.
 
 ## Features
 1. **Date/Time picker:** Picker allows selecting both date and time values. Time value is a text field; will be validated according to `formatTime` (see Options).
-2. **Day/Month/Year selection:** `formatDate` defines which parts of a date is selectable. by omitting month or day formats from it, the output would be limited to year and month values respectively.
-3. **Inline Display:** Picker can be used as an inline selector.
+2. **DateTime/Day/Week/Month/Year selection:** [`options.allow`](#allow) and [`options.timepicker`](#timepicker) define what can be selected using plugin.
+3. **Inline Display:** Picker can be used as an inline object.
 
 [⬆ back to top](#table-of-contents)
 
@@ -248,7 +248,7 @@ function showCalendar($placeholder, view){}
  [ ] _Better Separation of View/Controller:_ the template and the controlling code are tightly coupled at the moment but using constant values for placeholders and selectors will make it possible to customize the view even more.
 
 ### Finished / Abandoned ToDos 
- [x] _Other Calendars' Support:_ for the time being, on gregorian calendar is supported. By adding an interface to moment.js functions, it is possible to define Add-ons for other calendars like `Jalali Calendar (Persian Calendar)`. -- Edit: this is already provided using plugins like [Jalaali Calendar Plugin](https://github.com/jalaali/moment-jalaali) or [Hijri Calendar Plugin](https://github.com/xsoh/moment-hijri). Please refer to [Plugins Section](https://momentjs.com/docs/#/plugins/) of Moment.js for more information.
+ [x] _Other Calendars' Support:_ for the time being, gregorian calendar is fully supported. Support of other calendars is provided by plugins like [Jalaali Calendar Plugin](https://github.com/jalaali/moment-jalaali) or [Hijri Calendar Plugin](https://github.com/xsoh/moment-hijri), but has not been tested. Please refer to [Plugins Section](https://momentjs.com/docs/#/plugins/) of Moment.js for more information.
 
 [⬆ back to top](#table-of-contents) 
 
