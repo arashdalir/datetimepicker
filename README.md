@@ -13,8 +13,8 @@ A customizable date-time-picker using jQuery + jQuery-ui and moment.js.
 - [License](#license)
 
 ## Features
-1. **Date/Time picker:** Picker allows selecting both date and time values. Time value is a text field; will be validated according to `formatTime` (see Options).
-2. **DateTime/Day/Week/Month/Year selection:** [`options.allow`](#allow) and [`options.timepicker`](#timepicker) define what can be selected using plugin.
+1. **Date+Time picker:** Picker allows selecting both date and time values. Time value is a text field and is enabled by setting the desired time-format in [`options.timepicker`](#timepicker). Time input is only available if `days` is [`options.allow`](#allow)ed and will be shown in day-level selection view.
+2. **Day/Week/Month/Year selection:** [`options.allow`](#allow) and [`options.timepicker`](#timepicker) define what can be selected using plugin.
 3. **Inline Display:** Picker can be used as an inline object.
 
 [⬆ back to top](#table-of-contents)
