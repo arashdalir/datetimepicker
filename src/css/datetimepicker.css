@@ -1,5 +1,5 @@
 .datetimepicker-placeholder {
-	position: absolute;
+	position:   absolute;
 	box-sizing: border-box;
 	display:    none;
 }
@@ -16,10 +16,10 @@
 }
 
 .datetimepicker-view {
-	display: none;
-	padding: 0.1em;
+	display:    none;
+	padding:    0.1em;
 	text-align: center;
-	margin:0 auto;
+	margin:     0 auto;
 }
 
 .datetimepicker-line {
@@ -30,14 +30,13 @@
 
 .datetimepicker-flexcell,
 .datetimepicker-cell {
-	display: inline-block;
-	padding: 0.25em;
-	height:  1.5em;
-	margin:0.25em;
-	cursor: pointer;
+	display:        inline-block;
+	padding:        0.25em;
+	height:         1.5em;
+	margin:         0.25em;
+	cursor:         pointer;
 	vertical-align: top;
 }
-
 
 .datetimepicker-flexcell.not-selectable,
 .datetimepicker-cell.not-selectable {
@@ -45,37 +44,38 @@
 }
 
 .datetimepicker-weekdays .datetimepicker-flexcell,
-.datetimepicker-weekdays .datetimepicker-cell{
+.datetimepicker-weekdays .datetimepicker-cell {
 	cursor: inherit;
 	border: 1px solid transparent;
 }
 
-.datetimepicker-cell{
-	width:   2em;
-}
-.datetimepicker-flexcell{
-	width:   auto;
+.datetimepicker-cell {
+	width: 2em;
 }
 
-.datetimepicker-list{
+.datetimepicker-flexcell {
+	width: auto;
+}
+
+.datetimepicker-list {
 	margin: 0.1em 0;
-	width:      18em;
+	width:  18em;
 }
 
 .datetimepicker-prev,
-.datetimepicker-next{
+.datetimepicker-next {
 	width: 1.5em;
 }
 
 .datetimepicker-prev:after,
 .datetimepicker-next:after {
 	position:       absolute;
-	top: 0;
-	left: 0;
+	top:            0;
+	left:           0;
 	vertical-align: middle;
 	text-align:     center;
-	width: 100%;
-	height: 100%;
+	width:          100%;
+	height:         100%;
 }
 
 .datetimepicker-prev:after {
@@ -87,33 +87,35 @@
 	content: '\00BB';
 }
 
-.datetimepicker-placeholder .datetimepicker-list{
-	padding: 0.1em;
+.datetimepicker-placeholder .datetimepicker-list {
+	padding:            0.1em;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing:    border-box;
 	box-sizing:         border-box;
 }
-body{
+
+body {
 	min-height: 300px;
 }
 
-.datetimepicker-weekdays{
+.datetimepicker-weekdays {
 	font-weight: bold;
 }
-.datetimepicker-another-month{
-	color: #999999;
+
+.datetimepicker-another-month {
+	color:      #999999;
 	font-style: italic;
 }
 
-.datetimepicker-today:after{
-	position: absolute;
-	display: block;
-	bottom: 0;
-	right:0;
-	content: '';
+.datetimepicker-today:after {
+	position:   absolute;
+	display:    block;
+	bottom:     0;
+	right:      0;
+	content:    '';
 	background: url("images/jquery-ui-icons.png") -50px -20px;
-	height:7px;
-	width: 8px;
+	height:     7px;
+	width:      8px;
 }
 
 .datetimepicker-placeholder .ui-state-active,
@@ -124,35 +126,36 @@ body{
 .datetimepicker-placeholder .ui-state-disabled,
 .datetimepicker-cell:disabled,
 .datetimepicker-flexcell:disabled,
-.datetimepicker-disabled{
+.datetimepicker-disabled {
 	cursor: inherit;
 }
 
-.datetimepicker-time{
-	width: 7.5em;
+.datetimepicker-time {
+	width:      7.5em;
 	text-align: center;
 }
 
 .datetimepicker-placeholder .datetimepicker-list-months,
-.datetimepicker-placeholder .datetimepicker-list-years{
+.datetimepicker-placeholder .datetimepicker-list-years {
 	padding: 0 0.5em;
 }
 
-.datetimepicker-inline{
+.datetimepicker-inline {
 	min-height: 19em;
 }
 
 .datetimepicker-placeholder .clearfix::after {
 	content: "";
-	clear: both;
+	clear:   both;
 	display: table;
 }
 
-.datetimepicker-list-weeks{
-	width:2.5em;
-	display: inline-block;
+.datetimepicker-list-weeks {
+	width:        2.5em;
+	display:      inline-block;
 	border-right: 1px solid #999999;
 }
-.datetimepicker-days-holder{
+
+.datetimepicker-days-holder {
 	display: inline-block;
 }

@@ -47,31 +47,34 @@
 			numLock: 144
 		};
 
-		function attachPlaceholderEvents(){
+		function attachPlaceholderEvents()
+		{
 			let $placeholder = base.getPlaceholder();
 
-			if (!$placeholder || !$placeholder.length)
+			if(!$placeholder || !$placeholder.length)
 			{
 				return;
 			}
 
-			$placeholder.on(
-				'mouseover click',
-				function (evt){
-					let $target = $(evt.target);
-					evt.preventDefault();
+			$placeholder
+				.on(
+					'mouseover click',
+					function (evt){
+						let $target = $(evt.target);
+						evt.preventDefault();
 
-					if(base.blurTimeout)
-					{
-						clearTimeout(base.blurTimeout);
+						if(base.blurTimeout)
+						{
+							clearTimeout(base.blurTimeout);
+						}
 					}
-				}
-			).on(
-				'click',
-				function (evt){
-					handleChanges(evt);
-				}
-			);
+				)
+				.on(
+					'click',
+					function (evt){
+						handleChanges(evt);
+					}
+				);
 
 			$placeholder.find('.datetimepicker-time')
 				.on(
@@ -238,7 +241,7 @@
 			let $placeholder = base.$el.data(base.constants.data.placeholder);
 			if(!$placeholder || typeof $placeholder === typeof void 0)
 			{
-				if (base.options.template)
+				if(base.options.template)
 				{
 					$placeholder = $(base.options.template);
 
@@ -281,7 +284,7 @@
 				}
 			}
 
-			if(view === 'days' && base.options.timepicker)
+			if(base.allows('time'))
 			{
 				let $timeInput = base.getPlaceholder()
 					.find(".datetimepicker-time");
@@ -295,9 +298,15 @@
 			return format.join(' ');
 		};
 
-		base.allows = function(view)
-		{
-			return base.options.allow && base.options.allow.hasOwnProperty(view);
+		base.allows = function (view){
+			let ret = true;
+			if(view === 'time')
+			{
+				view = 'days';
+				ret = base.options.timepicker;
+			}
+
+			return ret && base.options.allow && base.options.allow.hasOwnProperty(view);
 		};
 
 		base.matchValueView = function (datetime){
@@ -309,7 +318,7 @@
 			let rounds = 2;
 			let strict = true;
 
-			if (base.options.allow)
+			if(base.options.allow)
 			{
 				while(rounds)
 				{
@@ -320,7 +329,7 @@
 
 					for(let v in base.options.allow)
 					{
-						if (base.allows(v))
+						if(base.allows(v))
 						{
 							let format = base.getCompleteFormat(v);
 
@@ -436,7 +445,7 @@
 				base.showView($($views)
 					.filter('.datetimepicker-' + viewpoint));
 
-				if(view === 'days' && base.options.timepicker)
+				if(base.allows("time"))
 				{
 					let $timePicker = $views.filter('.datetimepicker-timepicker');
 					base.showView($timePicker);
@@ -454,8 +463,10 @@
 						{
 							if(base.$el.val())
 							{
-								$timeInput.val(base.getDateTime()
-									.format(base.options.timepicker));
+								$timeInput.val(
+									base.getDateTime()
+										.format(base.options.timepicker)
+								);
 							}
 						}
 					}
@@ -651,7 +662,7 @@
 				$weeks.html('');
 				let week = firstDay.clone();
 
-				for (; week.isSameOrBefore(lastDay); week.add(1, 'week'))
+				for(; week.isSameOrBefore(lastDay); week.add(1, 'week'))
 				{
 					let $week = $("<div>")
 						.html(week.format('W'));
@@ -659,7 +670,7 @@
 					let classes = ['datetimepicker-cell'];
 					let action = ["week"];
 
-					if (base.allows('weeks'))
+					if(base.allows('weeks'))
 					{
 						if(view === 'weeks' && week.isSame(selectedDay, 'week'))
 						{
@@ -716,7 +727,7 @@
 					classes.push('datetimepicker-today');
 				}
 
-				if (base.allows('days'))
+				if(base.allows('days'))
 				{
 					if(view === 'days' && viewDay.isSame(selectedDay, 'day'))
 					{
@@ -1098,18 +1109,18 @@
 
 				if(!moment.isMoment(current))
 				{
-					current = moment(current, format);
+					if(format)
+					{
+						current = moment(current, format);
+					}
+					else
+					{
+						current = moment(current);
+					}
 				}
 
-				if(view === 'days' && base.options.timepicker)
+				if(base.allows('time'))
 				{
-					let time = moment(
-						base.getPlaceholder()
-							.find('.datetimepicker-time')
-							.val(),
-						base.options.formatTime
-					);
-
 					let $timeInput = base.getPlaceholder()
 						.find('.datetimepicker-time');
 
@@ -1139,8 +1150,10 @@
 
 				switch(action[1])
 				{
+
 				case 'prev':
 				case 'next':
+					// clicked of previous/next month/year/decade buttons
 					if(increment && unit)
 					{
 						if(action[1] === 'prev')
@@ -1157,26 +1170,48 @@
 					break;
 
 				case 'current':
+					// clicked on current month/year/decade button - to show a higher level
+
 					if(view === 'decades')
 					{
+						// no higher level after decades, stay on `years`-view
 						view = 'years';
 					}
 					base.showCalendar(current, base.getView(view));
 					break;
 
 				default:
-					let offset = -1;
-					if (action[0] === 'week')
-					{
-						offset = 0;				
-					}
-
+					// clicked on a specific year/month/week/day value to select it
 					if(base.allows(view))
 					{
 						base.setByPlugin = true;
 						base.events.set.call(base, base.$el, current, view);
 						base.setByPlugin = false;
-						base.showCalendar(current, base.getView(view, offset));
+					}
+
+					// try showing a lower level view
+					let offset = -1;
+
+					// if showing weeks, stay on (virtual) weeks level
+					if(view === 'weeks')
+					{
+						offset = 0;
+					}
+
+					let targetView = base.getView(view, offset);
+
+					// `weeks` is a virtual view. if `weeks`-view is the target view and not allowed, check if
+					// `days`-view is allowed.
+					let allowed = base.allows(targetView);
+					if(targetView === 'weeks' && !allowed)
+					{
+						allowed = base.allows('days');
+						targetView = 'days';
+					}
+
+					if(allowed)
+					{
+						base.showCalendar(current, targetView, view);
 					}
 					break;
 				}
@@ -1193,7 +1228,7 @@
 
 			let initiateEvents = false;
 
-			if (!base.options)
+			if(!base.options)
 			{
 				initiateEvents = true;
 			}
@@ -1220,7 +1255,7 @@
 				}
 			}
 
-			if (base.allows('weeks') && !base.options.displayWeeks)
+			if(base.allows('weeks') && !base.options.displayWeeks)
 			{
 				base.options.displayWeeks = true;
 			}
@@ -1235,7 +1270,7 @@
 				// todo: throw error indicating the plugin has no allowed formats
 			}
 
-			if (initiateEvents || currentOptions.template !== base.options.template)
+			if(initiateEvents || currentOptions.template !== base.options.template)
 			{
 				setPlaceholder(null);
 				attachPlaceholderEvents();
@@ -1291,7 +1326,6 @@
 						}
 					}
 				);
-
 
 			if(base.options.trigger)
 			{
@@ -1397,15 +1431,13 @@
 		}
 	};
 
-	$.DateTimePicker.getTemplate = function(path)
-	{
+	$.DateTimePicker.getTemplate = function (path){
 		let template = null;
 
 		$.ajax({
 			url: path,
 			async: false,
-			success: function(html)
-			{
+			success: function (html){
 				template = html;
 			}
 		});
