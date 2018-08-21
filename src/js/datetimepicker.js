@@ -278,35 +278,58 @@
 			let format = [];
 			if(typeof view !== typeof void 0)
 			{
+				view = base.normalizeViewPoint(view);
+
 				if(this.options.allow[view])
 				{
 					format.push(base.options.allow[view]);
 				}
-			}
 
-			if(base.allows('time'))
-			{
-				let $timeInput = base.getPlaceholder()
-					.find(".datetimepicker-time");
-
-				if(!$timeInput.attr("manual_unset"))
+				if(base.allows('time') && view === 'days')
 				{
-					format.push(base.options.timepicker);
+					let $timeInput = base.getPlaceholder()
+						.find(".datetimepicker-time");
+
+					if(!$timeInput.attr("manual_unset"))
+					{
+						format.push(base.options.timepicker);
+					}
+
 				}
 			}
 
 			return format.join(' ');
 		};
 
+		base.normalizeViewPoint = function (view){
+
+			if(!base.options.allow.hasOwnProperty(view))
+			{
+				switch(view)
+				{
+				case 'time':
+					view = 'days';
+					break;
+
+				case 'days':
+					view = 'time';
+					break;
+				}
+			}
+
+			return view;
+		};
+
 		base.allows = function (view){
 			let ret = true;
+			let nView = base.normalizeViewPoint(view);
+
 			if(view === 'time')
 			{
-				view = 'days';
 				ret = base.options.timepicker;
 			}
 
-			return ret && base.options.allow && base.options.allow.hasOwnProperty(view);
+			return ret && base.options.allow && base.options.allow.hasOwnProperty(nView);
 		};
 
 		base.matchValueView = function (datetime){
@@ -424,6 +447,7 @@
 
 				switch(view)
 				{
+				case 'time':
 				case 'days':
 				case 'weeks':
 					base.showDaysPicker($placeholder, datetime, view);
@@ -442,10 +466,12 @@
 				}
 
 				base.hideView($views.not('.datetimepicker-' + viewpoint));
-				base.showView($($views)
-					.filter('.datetimepicker-' + viewpoint));
+				base.showView(
+					$($views)
+					.filter('.datetimepicker-' + viewpoint)
+				);
 
-				if(base.allows("time"))
+				if(base.allows("time") && viewpoint === 'days')
 				{
 					let $timePicker = $views.filter('.datetimepicker-timepicker');
 					base.showView($timePicker);
@@ -454,21 +480,11 @@
 
 					if(!$timeInput.attr('manual_unset'))
 					{
-						if(!$timeInput.val())
-						{
-							$timeInput.val(moment()
-								.format(base.options.timepicker));
-						}
-						else
-						{
-							if(base.$el.val())
-							{
-								$timeInput.val(
-									base.getDateTime()
-										.format(base.options.timepicker)
-								);
-							}
-						}
+						$timeInput.val(
+							base.getDateTime()
+								.format(base.options.timepicker)
+						);
+
 					}
 				}
 
@@ -493,6 +509,47 @@
 				base.showView($placeholder);
 				$placeholder.position(position);
 			}
+		};
+
+		base.getNextAllowed = function (view, offset){
+			if(offset > 0)
+			{
+				offset = 1;
+			}
+			else
+			{
+				offset = -1;
+			}
+
+			let next = null;
+
+			let index = $.DateTimePicker.views.indexOf(view);
+
+			if(index !== -1)
+			{
+				while(index > -1 && index < $.DateTimePicker.views.length)
+				{
+					let cur = $.DateTimePicker.views[index];
+
+					if(cur)
+					{
+						if(base.allows(cur))
+						{
+							next = cur;
+							break;
+						}
+					}
+					else
+					{
+						break;
+					}
+
+					index += offset;
+				}
+			}
+
+			return next;
+
 		};
 
 		base.getView = function (view, offset){
@@ -557,6 +614,7 @@
 				let precision = null;
 				switch(view)
 				{
+				case 'time':
 				case 'days':
 					precision = 'day';
 					break;
@@ -729,7 +787,7 @@
 
 				if(base.allows('days'))
 				{
-					if(view === 'days' && viewDay.isSame(selectedDay, 'day'))
+					if(['days', 'time'].indexOf(view) !== -1 && viewDay.isSame(selectedDay, 'day'))
 					{
 						classes.push('datetimepicker-selected');
 						classes.push('ui-state-active');
@@ -1209,7 +1267,7 @@
 						targetView = 'days';
 					}
 
-					if(allowed)
+					if(allowed || base.getNextAllowed(view, offset))
 					{
 						base.showCalendar(current, targetView, view);
 					}
@@ -1379,6 +1437,7 @@
 	};
 
 	$.DateTimePicker.views = [
+		'time',
 		'days',
 		'weeks',
 		'months',
