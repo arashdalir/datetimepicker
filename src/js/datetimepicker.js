@@ -60,7 +60,6 @@
 				.on(
 					'mouseover click',
 					function (evt){
-						let $target = $(evt.target);
 						evt.preventDefault();
 
 						if(base.blurTimeout)
@@ -119,7 +118,7 @@
 		{
 			let which = evt.which;
 
-			return ([keys.left, keys.right, keys.up, keys.down].indexOf(which) != -1);
+			return ([keys.left, keys.right, keys.up, keys.down].indexOf(which) !== -1);
 		}
 
 		function isTargetInBase($target, $placeholder)
@@ -467,8 +466,7 @@
 
 				base.hideView($views.not('.datetimepicker-' + viewpoint));
 				base.showView(
-					$($views)
-					.filter('.datetimepicker-' + viewpoint)
+					$($views).filter('.datetimepicker-' + viewpoint)
 				);
 
 				if(base.allows("time") && viewpoint === 'days')
@@ -484,7 +482,6 @@
 							base.getDateTime()
 								.format(base.options.timepicker)
 						);
-
 					}
 				}
 
@@ -631,8 +628,6 @@
 					precision = 'year';
 					break;
 				}
-
-				let format = base.getCompleteFormat(view);
 
 				if(base.options.min)
 				{
@@ -1250,8 +1245,8 @@
 					// try showing a lower level view
 					let offset = -1;
 
-					// if showing weeks, stay on (virtual) weeks level
-					if(view === 'weeks')
+					// if showing weeks or days, don't need to drill down, as days/time view is also present
+					if(['weeks', 'days'].indexOf(view) !== -1)
 					{
 						offset = 0;
 					}
