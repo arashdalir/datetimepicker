@@ -17,6 +17,7 @@
 		base.blurTimeout = null;
 		base.timeChangeTimeout = null;
 		base.setByPlugin = false;
+		base.viewpoint = null;
 
 		// Access to jQuery and DOM versions of element
 		base.$el = $(el);
@@ -31,7 +32,8 @@
 			data: {
 				placeholder: 'datetimepicker_placeholder',
 				current: 'date_current',
-				action: 'action'
+				action: 'action',
+				focus: "functional-focus"
 			}
 		};
 
@@ -46,6 +48,40 @@
 			backspace: 8,
 			numLock: 144
 		};
+
+		function doBlur(evt)
+		{
+			let letBlur = false;
+			let $target = $(evt.target);
+			let focusByPlugin = base.$el.data(base.constants.data.focus);
+			base.$el.data(base.constants.data.focus, false);
+			let self = isTargetSelf($target);
+
+			if(evt.type === 'blur' && self)
+			{
+				letBlur = true;
+			}
+			else
+			{
+				if(!self && !isTargetInBase($target, base.getPlaceholder()))
+				{
+					if(!base.options.debug && !base.options.sticky)
+					{
+						if(!focusByPlugin)
+						{
+							letBlur = true;
+						}
+					}
+				}
+			}
+
+			if(letBlur)
+			{
+				base.blurTimeout = setTimeout(function (){
+					base.events.hide.call(base);
+				}, 200);
+			}
+		}
 
 		function attachPlaceholderEvents()
 		{
@@ -121,23 +157,29 @@
 			return ([keys.left, keys.right, keys.up, keys.down].indexOf(which) !== -1);
 		}
 
+		function isTargetSelf($target)
+		{
+			return $target.is(base.$el);
+		}
+
 		function isTargetInBase($target, $placeholder)
 		{
+			let ret = null;
+			let $parents = null;
+
 			if(typeof $placeholder === typeof void 0)
 			{
 				$placeholder = base.getPlaceholder();
 			}
 
-			let $parents = $target.closest($placeholder);
+			$parents = $target.closest($placeholder);
 
 			if($parents.length !== 0)
 			{
-				return $target;
+				ret = $target;
 			}
-			else
-			{
-				return null;
-			}
+			
+			return ret;
 		}
 
 		base.callHook = function (hook){
@@ -284,16 +326,22 @@
 					format.push(base.options.allow[view]);
 				}
 
-				if(base.allows('time') && view === 'days')
+				if(['days', 'time'].indexOf(view) !== -1 && base.allows('time'))
 				{
 					let $timeInput = base.getPlaceholder()
 						.find(".datetimepicker-time");
 
-					if(!$timeInput.attr("manual_unset"))
+					let includeTime = true;
+
+					if (view === 'days')
+					{
+						includeTime = !$timeInput.attr("manual_unset");
+					}
+
+					if(includeTime)
 					{
 						format.push(base.options.timepicker);
 					}
-
 				}
 			}
 
@@ -301,7 +349,6 @@
 		};
 
 		base.normalizeViewPoint = function (view){
-
 			if(!base.options.allow.hasOwnProperty(view))
 			{
 				switch(view)
@@ -322,13 +369,23 @@
 		base.allows = function (view){
 			let ret = true;
 			let nView = base.normalizeViewPoint(view);
+			let hasNView =  false;
 
 			if(view === 'time')
 			{
 				ret = base.options.timepicker;
 			}
 
-			return ret && base.options.allow && base.options.allow.hasOwnProperty(nView);
+			if (['time', 'days'].indexOf(view) !== -1)
+			{
+				hasNView = base.options.allow.hasOwnProperty("time")|| base.options.allow.hasOwnProperty("days");
+			}
+			else
+			{
+				hasNView = base.options.allow.hasOwnProperty(nView);
+			}
+
+			return ret && base.options.allow && hasNView;
 		};
 
 		base.matchValueView = function (datetime){
@@ -464,9 +521,12 @@
 					break;
 				}
 
+				base.viewpoint = viewpoint;
+
 				base.hideView($views.not('.datetimepicker-' + viewpoint));
 				base.showView(
-					$($views).filter('.datetimepicker-' + viewpoint)
+					$($views)
+						.filter('.datetimepicker-' + viewpoint)
 				);
 
 				if(base.allows("time") && viewpoint === 'days')
@@ -592,10 +652,10 @@
 			return view;
 		};
 
-		base.isBetweenRange = function (viewDay, view){
-			if(!moment.isMoment(viewDay))
+		base.isBetweenRange = function (date, view){
+			if(!moment.isMoment(date))
 			{
-				viewDay = moment(viewDay, base.getCompleteFormat());
+				date = moment(date, base.getCompleteFormat(view));
 			}
 
 			let ret = false;
@@ -631,7 +691,7 @@
 
 				if(base.options.min)
 				{
-					if(viewDay.isBefore(base.options.min, precision))
+					if(date.isBefore(base.options.min, precision))
 					{
 						ret = false;
 					}
@@ -639,7 +699,7 @@
 
 				if(base.options.max)
 				{
-					if(viewDay.isAfter(base.options.max, precision))
+					if(date.isAfter(base.options.max, precision))
 					{
 						ret = false;
 					}
@@ -1158,18 +1218,11 @@
 					break;
 				}
 
-				let format = base.getCompleteFormat();
+				let format = base.getCompleteFormat(view);
 
 				if(!moment.isMoment(current))
 				{
-					if(format)
-					{
-						current = moment(current, format);
-					}
-					else
-					{
-						current = moment(current);
-					}
+					current = moment(current);
 				}
 
 				if(base.allows('time'))
@@ -1203,7 +1256,6 @@
 
 				switch(action[1])
 				{
-
 				case 'prev':
 				case 'next':
 					// clicked of previous/next month/year/decade buttons
@@ -1238,7 +1290,7 @@
 					if(base.allows(view))
 					{
 						base.setByPlugin = true;
-						base.events.set.call(base, base.$el, current, view);
+						base.events.set.call(base, current, view);
 						base.setByPlugin = false;
 					}
 
@@ -1328,10 +1380,53 @@
 				setPlaceholder(null);
 				attachPlaceholderEvents();
 			}
-		};
+
+			if(base.options.trigger)
+			{
+				let trigger = base.options.trigger;
+				if(typeof trigger !== typeof {})
+				{
+					base.options.trigger = {};
+					base.options.trigger[trigger] = base.options.view;
+				}
+
+				for(trigger in base.options.trigger)
+				{
+					if(!base.options.trigger.hasOwnProperty(trigger))
+					{
+						continue;
+					}
+
+					let $trigger = $(trigger);
+
+					let view = base.options.trigger[trigger];
+					$trigger.on(
+						"click", function (){
+							if(!base.getPlaceholder().is(":visible") || base.viewpoint !== view)
+							{
+								base.events.show.call(base, view);
+							}
+							else
+							{
+								base.events.hide.call(base);
+							}
+						}
+					)
+				}
+			}
+
+			if(base.options.inline)
+			{
+				base.getPlaceholder();
+				base.showCalendar();
+			}
+		}
+		;
 
 		base.init = function (){
 			base.setOptions(options);
+
+			base.$el.data(base.constants.data.focus, false);
 
 			base.$el.on(
 				"change keyup",
@@ -1346,7 +1441,7 @@
 						let view = base.getView();
 						let datetime = base.getDateTime();
 						base.showCalendar(datetime);
-						base.callHook("set", base.$el, datetime, view);
+						base.callHook("set", datetime, view);
 					}
 				});
 
@@ -1358,12 +1453,7 @@
 
 			base.$el.on(
 				"blur", function (evt){
-					if(!base.options.debug && !base.options.sticky)
-					{
-						base.blurTimeout = setTimeout(function (){
-							base.events.hide.call(base);
-						}, 200);
-					}
+					doBlur(evt);
 				}
 			);
 
@@ -1371,44 +1461,13 @@
 				.on(
 					"click",
 					function (evt){
-						let $target = $(evt.target);
-
-						if($target.get(0) !== base.$el.get(0) && !isTargetInBase($target, base.getPlaceholder()))
-						{
-							base.$el.blur();
-						}
+						doBlur(evt);
 					}
 				);
-
-			if(base.options.trigger)
-			{
-				base.$trigger = $(base.options.trigger);
-
-				base.$trigger.on(
-					"click", function (){
-						if(!base.$trigger.data('status') || base.$trigger.data('status') === "invisible")
-						{
-							base.$trigger.data('status', "visible");
-							base.events.show.call(base);
-						}
-						else
-						{
-							base.$trigger.data('status', "invisible");
-							base.events.hide.call(base);
-						}
-					}
-				)
-			}
 
 			if(!base.$el.attr('id'))
 			{
 				base.$el.uniqueId();
-			}
-
-			if(base.options.inline)
-			{
-				base.getPlaceholder();
-				base.showCalendar();
 			}
 
 			base.callHook('init');
@@ -1416,7 +1475,8 @@
 
 		// Run initializer
 		base.init();
-	};
+	}
+	;
 
 	$.DateTimePicker.setLocale = function (base){
 		if(typeof base !== typeof void 0)
@@ -1460,8 +1520,10 @@
 	};
 
 	$.DateTimePicker.defaultEvents = {
-		show: function (){
-			this.showCalendar();
+		show: function (view){
+			clearTimeout(this.blurTimeout);
+			this.$el.data(this.constants.data.focus, true);
+			this.showCalendar(void 0, view);
 		},
 		hide: function (){
 			if(!this.options.inline)
@@ -1469,7 +1531,7 @@
 				this.hideView(this.getPlaceholder());
 			}
 		},
-		set: function ($el, datetime, view){
+		set: function (datetime, view){
 			let format = this.getCompleteFormat(view);
 			if(!moment.isMoment(datetime))
 			{
@@ -1478,10 +1540,10 @@
 
 			if(format)
 			{
-				$el.val(datetime.format(format));
+				this.$el.val(datetime.format(format));
 			}
 
-			this.callHook('set', $el, view);
+			this.callHook('set', view);
 		}
 	};
 
@@ -1529,4 +1591,5 @@
 		}
 	};
 
-})(jQuery);
+})
+(jQuery);

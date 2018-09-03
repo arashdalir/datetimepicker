@@ -35,7 +35,7 @@
 				$("#date-picker1")
 					.DateTimePicker(
 						{
-							allow:{
+							allow: {
 								months: "MM-Y",
 								weeks: "[W]W-Y",
 								days: 'DD-MM-Y'
@@ -73,11 +73,13 @@
 
 				$(".date-range")
 					.DateTimePicker({
-						allow:{
+						allow: {
 							days: 'DD-MM-Y'
 						},
-						min: moment().subtract(1, "month"),
-						max: moment().add(1, "month"),
+						min: moment()
+							.subtract(1, "month"),
+						max: moment()
+							.add(1, "month"),
 						hooks: {
 							init: function (){
 								if(typeof this.$el.data("data-max") === typeof void 0)
@@ -146,7 +148,7 @@
 							let $this = $(this);
 							let base = $this.data('DateTimePicker');
 
-							base.callHook("set", $this);
+							base.callHook("set");
 						}
 					);
 
@@ -185,7 +187,7 @@
 					.DateTimePicker(
 						"hooks",
 						{
-							"showCalendar": function($placeholder, view){
+							"showCalendar": function ($placeholder, view){
 								console.log($placeholder, view);
 							}
 						}
@@ -193,13 +195,56 @@
 
 				$("#date-picker6")
 					.DateTimePicker({
-						allow:{
+						allow: {
 							years: 'Y',
 							months: "Y-MM",
 							weeks: "Y-[W]W",
 							days: "Y-MM-DD"
 						}
 					});
+
+				$("#date-picker7")
+					.DateTimePicker({
+						allow: {
+							years: 'Y',
+							months: "Y-MM",
+							weeks: "Y-[W]W",
+							days: "Y-MM-DD"
+						},
+						timepicker: 'H:mm:ss.SSS',
+						trigger:{
+							"#date-picker7-month-trigger": "months",
+							"#date-picker7-day-trigger": "days"
+						}
+					});
+
+				/*
+				$("#date-picker7-month-trigger")
+					.on(
+						"click",
+						function (){
+							$("#date-picker7")
+								.DateTimePicker(
+									"exec", {
+										show: ["months"]
+									}
+								);
+						}
+					);
+
+				$("#date-picker7-day-trigger")
+					.on(
+						"click",
+						function (){
+							$("#date-picker7")
+								.DateTimePicker(
+									"exec", {
+										show: ["days"]
+									}
+								);
+						}
+					);
+					*/
 			}
 		);
 </script>
@@ -239,6 +284,14 @@
 	<h1>Example 6</h1>
 	<h2>Year-, Month-, Week- and Day-Picker</h2>
 	<input placeholder="" id="date-picker6" type="text"/>
+</div>
+<div class="example">
+	<h1>Example 7</h1>
+	<h2>Year-, Month-, Week-, Day- and Time-Picker</h2>
+	<h3>with external triggers for opening monthly and daily views</h3>
+	<input placeholder="" id="date-picker7" type="text"/>
+	<button id="date-picker7-month-trigger" type="button">Month-Picker</button>
+	<button id="date-picker7-day-trigger" type="button">Day-Picker</button>
 </div>
 
 </body>

@@ -25,7 +25,7 @@ Please download the [latest release](https://github.com/arashdalir/datetimepicke
 [⬆ back to top](#table-of-contents)
 
 ## Usage
-Please refer to [`examples/index.html`](examples/index.html) for some examples.
+> Refer to [`examples/index.html`](examples/index.html) for some examples.
 
 ### Usage Notes
 1. see [Note 1](#note1) about setting `options.allow`.
@@ -54,6 +54,7 @@ List:
 - [`max`](#max)
 - [`min`](#min)
 - [`position`](#position)
+- [`sticky`](#sticky)
 - [`template`](#template)
 - [`timepicker`](#timepicker)
 - [`trigger`](#trigger)
@@ -62,7 +63,9 @@ List:
 ### `allow`
 if set, it should be an object with `$.DateTimePicker.views` values as keys, and acceptable `moment.js` formats as values, which will then allow setting output on different views - default = `null`
 
-Refer to [note2](#note2) for more information about selecting/displaying `weeks`.
+> To ONLY ALLOW `time`: use `allow.time: 'DATE-FORMAT'` + `timepicker: 'TIME-FORMAT'`. To allow `days` and `time`, use `allow.days: 'DATE-FORMAT'` + `timepicker: 'TIME-FORMAT'`. The latter method allows leaving `time` field empty, hence selecting a day.
+
+> Refer to [note2](#note2) for more information about selecting/displaying `weeks`.
 
 #### Note1
 This option MUST be set for each instance in order to tell it which views are allowed and which values can be selected. IF no value is set (is with default value), no date/time can be picked and the picker will not drill down. 
@@ -138,10 +141,18 @@ position = {
 	collision: 'flipfit'
 }
 ```
-please refer to [jQueryUi#position](https://jqueryui.com/position/) for more information.
+> Refer to [jQueryUi#position](https://jqueryui.com/position/) for more information.
 
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to options](#options)
+
+
+### `sticky`
+if set to true, the placeholder will not be automatically hidden when a click/blur-event outside of placeholder or input field is detected - default: `false`
+
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to options](#options)
+
 
 ### `template`
 HTML template for the plugin view - default is `null`
@@ -164,7 +175,21 @@ If the plugin should show time-field in day-view - default: `false`, acceptable 
 [⬅ back to options](#options)
 
 ### `trigger`
-id defined, `show` action will be executed on `click`-event of the defined trigger.
+if defined, `show` action will be executed on `click`-event of the defined trigger(s). The value can be either a selector, which defines a trigger to open [`options.view`](#view), but it can also be an object with keys defining the selectors and values defining their `viewpoint` - default: `null`, acceptable values:
+
+```javascript
+// define a single trigger with default to `options.view`
+let example1 = {
+	trigger: '#button-id'
+};
+	
+let example2 = {
+	trigger: {
+		'#button-id1': 'days', // #button-id1 opens `days` view
+		'#button-id2': 'months' // #button-id2 opens `months` view
+	}
+};
+```
 
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to options](#options)
@@ -172,7 +197,7 @@ id defined, `show` action will be executed on `click`-event of the defined trigg
 ### `view`
 sets the view-level which is used when the picker is shown. default: `'days'`
 
-can be any of `'days'`, `'weeks'`, `'months'`, `'years'`, `'decades'` respectively to begin the selection from day, month, year or decade level.
+can be any of `'time'`, `'days'`, `'weeks'`, `'months'`, `'years'`, `'decades'` respectively to begin the selection from day, month, year or decade level.
 
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to options](#options)
@@ -248,7 +273,9 @@ function showCalendar($placeholder, view){}
  [ ] _Better Separation of View/Controller:_ the template and the controlling code are tightly coupled at the moment but using constant values for placeholders and selectors will make it possible to customize the view even more.
 
 ### Finished / Abandoned ToDos 
- [x] _Other Calendars' Support:_ for the time being, gregorian calendar is fully supported. Support of other calendars is provided by plugins like [Jalaali Calendar Plugin](https://github.com/jalaali/moment-jalaali) or [Hijri Calendar Plugin](https://github.com/xsoh/moment-hijri), but has not been tested. Please refer to [Plugins Section](https://momentjs.com/docs/#/plugins/) of Moment.js for more information.
+ [x] _Other Calendars' Support:_ for the time being, gregorian calendar is fully supported. Support of other calendars is provided by plugins like [Jalaali Calendar Plugin](https://github.com/jalaali/moment-jalaali) or [Hijri Calendar Plugin](https://github.com/xsoh/moment-hijri), but has not been tested.
+ 
+ > Refer to [Plugins Section](https://momentjs.com/docs/#/plugins/) of Moment.js for more information.
 
 [⬆ back to top](#table-of-contents) 
 
