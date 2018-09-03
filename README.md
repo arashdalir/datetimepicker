@@ -231,10 +231,10 @@ function init(){}
 executed after the plugin has set the value - prototype: 
 ```javascript
 /**
-* @param  $element - the jquery-ready html-element, onm which the set function has been executed
+* @param  datetime - value to be set in the input field - to be formatted according to view
 * @param  view - the view which has caused the set action
 */
-function set($element, view){}
+function set(datetime, view){}
 ```
 
 

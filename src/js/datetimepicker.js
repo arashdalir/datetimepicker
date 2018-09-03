@@ -1543,7 +1543,7 @@
 				this.$el.val(datetime.format(format));
 			}
 
-			this.callHook('set', view);
+			this.callHook('set', datetime, view);
 		}
 	};
 
