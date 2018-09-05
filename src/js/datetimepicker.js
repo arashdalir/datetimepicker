@@ -411,20 +411,30 @@
 			let format = "";
 			if(typeof view !== typeof undefined)
 			{
-				if(base.allows('days') && base.allows('time'))
+				if(['days', 'time'].indexOf(view) !== -1)
 				{
-					let $timeInput = base.getPlaceholder()
-						.find(".datetimepicker-time");
-
-					let includeTime = !$timeInput.attr("manual_unset");
-
-					if(includeTime)
+					if(base.allows('time'))
 					{
-						view = "time";
-					}
-					else
-					{
-						view = "days";
+						if(base.allows('days', false))
+						{
+							let $timeInput = base.getPlaceholder()
+								.find(".datetimepicker-time");
+
+							let includeTime = !$timeInput.attr("manual_unset");
+
+							if(includeTime)
+							{
+								view = "time";
+							}
+							else
+							{
+								view = "days";
+							}
+						}
+						else
+						{
+							view = 'time';
+						}
 					}
 				}
 
@@ -437,8 +447,32 @@
 			return format;
 		};
 
-		base.allows = function (view){
-			return base.options.allow && base.options.allow.hasOwnProperty(view);
+		base.allows = function (view, checkTime){
+			if(typeof checkTime === typeof undefined)
+			{
+				checkTime = true;
+			}
+
+			let ret = false;
+			let checks = [view];
+
+			if(checkTime && view === 'days')
+			{
+				let $timeInput = base.getPlaceholder()
+					.find('.datetimepicker-time');
+				checks.push('time');
+			}
+
+			for(let i = 0; i < checks.length; i++)
+			{
+				view = checks[i];
+				if(ret = (base.options.allow && base.options.allow.hasOwnProperty(view)))
+				{
+					break;
+				}
+			}
+
+			return ret;
 		};
 
 		base.matchValueView = function (datetime){
@@ -1284,12 +1318,31 @@
 					let $timeInput = base.getPlaceholder()
 						.find('.datetimepicker-time');
 
-					if(originalAction === 'time')
+					let forcedTime = (view === 'days' && !base.allows('days', false));
+
+					if(originalAction === 'time' || forcedTime)
 					{
+						let time = null;
 						if($timeInput.val())
 						{
 							current = moment(current.valueOf());
-							let time = moment($timeInput.val(), extractTimeFormat(base.options.allow['time']));
+							time = $timeInput.val();
+
+							$timeInput.removeAttr('manual_unset');
+						}
+						else
+						{
+							if(forcedTime)
+							{
+								time = '0:00:00.000';
+							}
+							$timeInput.attr('manual_unset', true);
+						}
+
+						if(time)
+						{
+							time = moment(time, extractTimeFormat(base.options.allow['time']));
+
 							current.set(
 								{
 									hour: time.hour(),
@@ -1298,12 +1351,6 @@
 									millisecond: time.millisecond()
 								}
 							);
-
-							$timeInput.removeAttr('manual_unset');
-						}
-						else
-						{
-							$timeInput.attr('manual_unset', true);
 						}
 					}
 				}

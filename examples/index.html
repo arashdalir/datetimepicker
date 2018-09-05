@@ -218,6 +218,13 @@
 						}
 					});
 
+				$("#date-picker8")
+					.DateTimePicker({
+						allow: {
+							time: "Y-MM-DD H:mm:ss.SSS"
+						}
+					});
+
 				/*
 				$("#date-picker7-month-trigger")
 					.on(
@@ -292,6 +299,12 @@
 	<input placeholder="" id="date-picker7" type="text"/>
 	<button id="date-picker7-month-trigger" type="button">Month-Picker</button>
 	<button id="date-picker7-day-trigger" type="button">Day-Picker</button>
+</div>
+<div class="example">
+	<h1>Example 8</h1>
+	<h2>Date-Time Picker</h2>
+	<h3>both date and time must be selected</h3>
+	<input placeholder="" id="date-picker8" type="text"/>
 </div>
 
 </body>
