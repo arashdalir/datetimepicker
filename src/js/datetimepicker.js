@@ -17,6 +17,7 @@
 		base.blurTimeout = null;
 		base.timeChangeTimeout = null;
 		base.setByPlugin = false;
+		base.triggers = {};
 		base.viewpoint = null;
 
 		// Access to jQuery and DOM versions of element
@@ -48,6 +49,98 @@
 			backspace: 8,
 			numLock: 144
 		};
+
+		function extractTimeFormat(format)
+		{
+			let tFormat = '';
+			let escaped = false;
+			let inTimePart = false;
+
+			for(let i = 0; i < format.length; i++)
+			{
+				let c = format[i];
+
+				if(c === '[')
+				{
+					escaped = true;
+				}
+				if(c === ']')
+				{
+					escaped = false;
+				}
+
+				if(inTimePart && c.search(/\s/) !== -1)
+				{
+					tFormat = tFormat.trim() + c;
+				}
+				else
+				{
+					if(c.search(/\W/) !== -1 && inTimePart)
+					{
+						tFormat += c;
+					}
+					else
+					{
+						if(!escaped && c.search(/[aAhHkmsSL]/) !== -1)
+						{
+							inTimePart = true;
+							if(c === 'L')
+							{
+								if(format[i + 1] === 'T')
+								{
+									tFormat = c + format[++i];
+
+									if(format[i + 1] === 'S')
+									{
+										tFormat += format[++i];
+									}
+								}
+								else
+								{
+									inTimePart = false;
+								}
+							}
+							else
+							{
+								tFormat += c;
+
+								if(['h', 'H', 'k', 'm', 's'].indexOf(c) !== -1)
+								{
+									if(c === format[i + 1])
+									{
+										tFormat += c;
+										i++;
+									}
+								}
+								else
+								{
+									if(c === 'S')
+									{
+										let sLength = 1;
+										while(format[i + 1] === c && sLength < 9)
+										{
+											i++;
+											tFormat += c;
+											sLength++;
+										}
+									}
+								}
+							}
+						}
+						else
+						{
+							inTimePart = false;
+						}
+					}
+				}
+			}
+
+			if(!tFormat)
+			{
+				tFormat = undefined;
+			}
+			return tFormat;
+		}
 
 		function doBlur(evt)
 		{
@@ -128,7 +221,7 @@
 							function (){
 								handleChanges(evt);
 							},
-							1000
+							500
 						);
 					}
 				);
@@ -165,20 +258,19 @@
 		function isTargetInBase($target, $placeholder)
 		{
 			let ret = null;
-			let $parents = null;
 
-			if(typeof $placeholder === typeof void 0)
+			if(typeof $placeholder === typeof undefined)
 			{
 				$placeholder = base.getPlaceholder();
 			}
 
-			$parents = $target.closest($placeholder);
+			let $parents = $target.closest($placeholder);
 
 			if($parents.length !== 0)
 			{
 				ret = $target;
 			}
-			
+
 			return ret;
 		}
 
@@ -280,7 +372,7 @@
 
 		base.getPlaceholder = function (){
 			let $placeholder = base.$el.data(base.constants.data.placeholder);
-			if(!$placeholder || typeof $placeholder === typeof void 0)
+			if(!$placeholder || typeof $placeholder === typeof undefined)
 			{
 				if(base.options.template)
 				{
@@ -315,77 +407,38 @@
 			return $placeholder;
 		};
 
-		base.getCompleteFormat = function (view){
-			let format = [];
-			if(typeof view !== typeof void 0)
+		base.getFormat = function (view){
+			let format = "";
+			if(typeof view !== typeof undefined)
 			{
-				view = base.normalizeViewPoint(view);
-
-				if(this.options.allow[view])
-				{
-					format.push(base.options.allow[view]);
-				}
-
-				if(['days', 'time'].indexOf(view) !== -1 && base.allows('time'))
+				if(base.allows('days') && base.allows('time'))
 				{
 					let $timeInput = base.getPlaceholder()
 						.find(".datetimepicker-time");
 
-					let includeTime = true;
-
-					if (view === 'days')
-					{
-						includeTime = !$timeInput.attr("manual_unset");
-					}
+					let includeTime = !$timeInput.attr("manual_unset");
 
 					if(includeTime)
 					{
-						format.push(base.options.timepicker);
+						view = "time";
+					}
+					else
+					{
+						view = "days";
 					}
 				}
-			}
 
-			return format.join(' ');
-		};
-
-		base.normalizeViewPoint = function (view){
-			if(!base.options.allow.hasOwnProperty(view))
-			{
-				switch(view)
+				if(this.options.allow[view])
 				{
-				case 'time':
-					view = 'days';
-					break;
-
-				case 'days':
-					view = 'time';
-					break;
+					format = base.options.allow[view];
 				}
 			}
 
-			return view;
+			return format;
 		};
 
 		base.allows = function (view){
-			let ret = true;
-			let nView = base.normalizeViewPoint(view);
-			let hasNView =  false;
-
-			if(view === 'time')
-			{
-				ret = base.options.timepicker;
-			}
-
-			if (['time', 'days'].indexOf(view) !== -1)
-			{
-				hasNView = base.options.allow.hasOwnProperty("time")|| base.options.allow.hasOwnProperty("days");
-			}
-			else
-			{
-				hasNView = base.options.allow.hasOwnProperty(nView);
-			}
-
-			return ret && base.options.allow && hasNView;
+			return base.options.allow && base.options.allow.hasOwnProperty(view);
 		};
 
 		base.matchValueView = function (datetime){
@@ -410,7 +463,7 @@
 					{
 						if(base.allows(v))
 						{
-							let format = base.getCompleteFormat(v);
+							let format = base.getFormat(v);
 
 							if(format)
 							{
@@ -540,7 +593,7 @@
 					{
 						$timeInput.val(
 							base.getDateTime()
-								.format(base.options.timepicker)
+								.format(extractTimeFormat(base.options.allow["time"]))
 						);
 					}
 				}
@@ -610,7 +663,7 @@
 		};
 
 		base.getView = function (view, offset){
-			if(typeof view === typeof void 0)
+			if(typeof view === typeof undefined)
 			{
 				let datetime = base.$el.val();
 
@@ -625,7 +678,7 @@
 				}
 			}
 
-			if(typeof offset === typeof void 0)
+			if(typeof offset === typeof undefined)
 			{
 				offset = null;
 			}
@@ -638,7 +691,7 @@
 				{
 					index += offset;
 
-					if($.DateTimePicker.views[index] !== void 0)
+					if($.DateTimePicker.views[index] !== undefined)
 					{
 						view = $.DateTimePicker.views[index];
 					}
@@ -655,7 +708,7 @@
 		base.isBetweenRange = function (date, view){
 			if(!moment.isMoment(date))
 			{
-				date = moment(date, base.getCompleteFormat(view));
+				date = moment(date, base.getFormat(view));
 			}
 
 			let ret = false;
@@ -724,7 +777,7 @@
 		base.showDaysPicker = function ($placeholder, datetime, view){
 			let selectedDay = base.getDateTime();
 
-			if(typeof datetime === typeof void 0)
+			if(typeof datetime === typeof undefined)
 			{
 				datetime = selectedDay.clone();
 			}
@@ -927,7 +980,7 @@
 		base.showMonthsPicker = function ($placeholder, datetime, view){
 			let selectedDay = base.getDateTime();
 
-			if(typeof datetime === typeof void 0)
+			if(typeof datetime === typeof undefined)
 			{
 				datetime = selectedDay.clone();
 			}
@@ -1042,7 +1095,7 @@
 		base.showYearsPicker = function ($placeholder, datetime, view){
 			let selectedDay = base.getDateTime();
 
-			if(typeof datetime === typeof void 0)
+			if(typeof datetime === typeof undefined)
 			{
 				datetime = selectedDay.clone();
 			}
@@ -1162,7 +1215,7 @@
 			let action = $target.data(base.constants.data.action);
 			let current = $target.data(base.constants.data.current);
 
-			if(typeof current === typeof void 0)
+			if(typeof current === typeof undefined)
 			{
 				current = base.getDateTime();
 			}
@@ -1175,7 +1228,8 @@
 				let unit = null;
 				let view = null;
 
-				switch(action[0])
+				let originalAction = action[0];
+				switch(originalAction)
 				{
 				case 'decade':
 					increment = 10;
@@ -1218,7 +1272,7 @@
 					break;
 				}
 
-				let format = base.getCompleteFormat(view);
+				let format = base.getFormat(view);
 
 				if(!moment.isMoment(current))
 				{
@@ -1230,27 +1284,27 @@
 					let $timeInput = base.getPlaceholder()
 						.find('.datetimepicker-time');
 
-					if($timeInput.val())
+					if(originalAction === 'time')
 					{
-						let time = moment($timeInput.val(), base.options.timepicker);
-						current.hour(time.hour());
-						current.minute(time.minute());
-						current.second(time.second());
-						current.millisecond(time.millisecond());
-
-						if(action[0] === 'time')
+						if($timeInput.val())
 						{
+							current = moment(current.valueOf());
+							let time = moment($timeInput.val(), extractTimeFormat(base.options.allow['time']));
+							current.set(
+								{
+									hour: time.hour(),
+									minute: time.minute(),
+									second: time.second(),
+									millisecond: time.millisecond()
+								}
+							);
+
 							$timeInput.removeAttr('manual_unset');
 						}
-					}
-					else
-					{
-						if(action[0] === 'time')
+						else
 						{
 							$timeInput.attr('manual_unset', true);
 						}
-						format = base.getCompleteFormat(view);
-						current = moment(current.format(format), format);
 					}
 				}
 
@@ -1399,19 +1453,25 @@
 
 					let $trigger = $(trigger);
 
-					let view = base.options.trigger[trigger];
-					$trigger.on(
-						"click", function (){
-							if(!base.getPlaceholder().is(":visible") || base.viewpoint !== view)
-							{
-								base.events.show.call(base, view);
+					if(!base.triggers[trigger])
+					{
+						base.triggers[trigger] = true;
+
+						let view = base.options.trigger[trigger];
+						$trigger.on(
+							"click", function (){
+								if(!base.getPlaceholder()
+									.is(":visible") || base.viewpoint !== view)
+								{
+									base.events.show.call(base, view);
+								}
+								else
+								{
+									base.events.hide.call(base);
+								}
 							}
-							else
-							{
-								base.events.hide.call(base);
-							}
-						}
-					)
+						)
+					}
 				}
 			}
 
@@ -1475,11 +1535,10 @@
 
 		// Run initializer
 		base.init();
-	}
-	;
+	};
 
 	$.DateTimePicker.setLocale = function (base){
-		if(typeof base !== typeof void 0)
+		if(typeof base !== typeof undefined)
 		{
 			if(base.hasOwnProperty('options'))
 			{
@@ -1514,7 +1573,6 @@
 		position: null,
 		sticky: false,
 		template: null,
-		timepicker: false,
 		trigger: null,
 		view: 'days'
 	};
@@ -1523,7 +1581,7 @@
 		show: function (view){
 			clearTimeout(this.blurTimeout);
 			this.$el.data(this.constants.data.focus, true);
-			this.showCalendar(void 0, view);
+			this.showCalendar(undefined, view);
 		},
 		hide: function (){
 			if(!this.options.inline)
@@ -1532,7 +1590,7 @@
 			}
 		},
 		set: function (datetime, view){
-			let format = this.getCompleteFormat(view);
+			let format = this.getFormat(view);
 			if(!moment.isMoment(datetime))
 			{
 				datetime = moment(datetime, format);
@@ -1568,7 +1626,7 @@
 			command = null;
 		}
 
-		if(typeof options === typeof void 0)
+		if(typeof options === typeof undefined)
 		{
 			options = {};
 		}
@@ -1590,6 +1648,5 @@
 			return this;
 		}
 	};
-
 })
 (jQuery);

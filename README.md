@@ -13,8 +13,8 @@ A customizable date-time-picker using jQuery + jQuery-ui and moment.js.
 - [License](#license)
 
 ## Features
-1. **Date+Time picker:** Picker allows selecting both date and time values. Time value is a text field and is enabled by setting the desired time-format in [`options.timepicker`](#timepicker). Time input is only available if `days` is [`options.allow`](#allow)ed and will be shown in day-level selection view.
-2. **Day/Week/Month/Year selection:** [`options.allow`](#allow) and [`options.timepicker`](#timepicker) define what can be selected using plugin.
+1. **Date+Time picker:** Picker allows selecting both date and time values. Time input is only available if `'time'` is [`options.allow`](#allow)ed and will be shown in day-level selection view.
+2. **Day/Week/Month/Year selection:** [`options.allow`](#allow) define what can be selected using plugin.
 3. **Inline Display:** Picker can be used as an inline object.
 
 [⬆ back to top](#table-of-contents)
@@ -56,14 +56,11 @@ List:
 - [`position`](#position)
 - [`sticky`](#sticky)
 - [`template`](#template)
-- [`timepicker`](#timepicker)
 - [`trigger`](#trigger)
 - [`view`](#view)
  
 ### `allow`
 if set, it should be an object with `$.DateTimePicker.views` values as keys, and acceptable `moment.js` formats as values, which will then allow setting output on different views - default = `null`
-
-> To ONLY ALLOW `time`: use `allow.time: 'DATE-FORMAT'` + `timepicker: 'TIME-FORMAT'`. To allow `days` and `time`, use `allow.days: 'DATE-FORMAT'` + `timepicker: 'TIME-FORMAT'`. The latter method allows leaving `time` field empty, hence selecting a day.
 
 > Refer to [note2](#note2) for more information about selecting/displaying `weeks`.
 
@@ -164,12 +161,6 @@ This value **MUST** be set for each instance or else the plugin will show nothin
 $.DateTimePicker.defaultOptions.template = $.DateTimePicker.getTemplate('../src/html/datetimepicker.html');
 ```
 There is a working template available in [src/html folder](/src/html/datetimepicker.html). Users can calculate its path and use the method mentioned above to set the option value. The [example page](/examples/index.html) shows this in action. ([read more notes](#usage-notes))
-
-[⬆ back to top](#table-of-contents) or 
-[⬅ back to options](#options)
-
-### `timepicker`
-If the plugin should show time-field in day-view - default: `false`, acceptable values are acceptable time formats of `moment.js`
 
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to options](#options)

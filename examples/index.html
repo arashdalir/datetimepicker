@@ -38,13 +38,13 @@
 							allow: {
 								months: "MM-Y",
 								weeks: "[W]W-Y",
-								days: 'DD-MM-Y'
+								days: 'DD-MM-Y',
+								time: "DD-MM-Y H:mm"
 							},
 							debug: false,
 							displayWeeks: true,
 							view: 'days',
-							inline: true,
-							timepicker: 'H:mm'
+							inline: true
 						}
 					);
 
@@ -209,9 +209,9 @@
 							years: 'Y',
 							months: "Y-MM",
 							weeks: "Y-[W]W",
-							days: "Y-MM-DD"
+							days: "Y-MM-DD",
+							time: "Y-MM-DD H:mm:ss.SSS"
 						},
-						timepicker: 'H:mm:ss.SSS',
 						trigger:{
 							"#date-picker7-month-trigger": "months",
 							"#date-picker7-day-trigger": "days"
