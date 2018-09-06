@@ -618,17 +618,21 @@
 
 				if(base.allows("time") && viewpoint === 'days')
 				{
-					let $timePicker = $views.filter('.datetimepicker-timepicker');
-					base.showView($timePicker);
-
-					let $timeInput = $timePicker.find('.datetimepicker-time');
-
-					if(!$timeInput.attr('manual_unset'))
+					let tFormat = extractTimeFormat(base.options.allow['time']);
+					if (tFormat)
 					{
-						$timeInput.val(
-							base.getDateTime()
-								.format(extractTimeFormat(base.options.allow["time"]))
-						);
+						let $timePicker = $views.filter('.datetimepicker-timepicker');
+						base.showView($timePicker);
+
+						let $timeInput = $timePicker.find('.datetimepicker-time');
+
+						if(!$timeInput.attr('manual_unset'))
+						{
+							$timeInput.val(
+								base.getDateTime()
+									.format(tFormat)
+							);
+						}
 					}
 				}
 
