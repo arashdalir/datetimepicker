@@ -7,8 +7,10 @@ A customizable date-time-picker using jQuery + jQuery-ui and moment.js.
 - [Features](#features)
 - [Installation](#installation)
 - [Dependencies](#dependencies)
+- [Internal Parameters](#internal-parameters)
 - [Options](#options)
 - [Hooks](#plugin-hooks)
+- [Manipulators](#manipulators)
 - [ToDos](#todos)
 - [License](#license)
 
@@ -28,9 +30,9 @@ Please download the [latest release](https://github.com/arashdalir/datetimepicke
 > Refer to [`examples/index.html`](examples/index.html) for some examples.
 
 ### Usage Notes
-1. see [Note 1](#note1) about setting `options.allow`.
-2. see [Note 2](#note2) about selecting/displaying `weeks`.
-2. see [Note 3](#note3) about defining `options.template`.
+1. see [this note](#setting-allow-value) about setting `options.allow`.
+2. see [this note](#showingselecting-weeks) about selecting/displaying `weeks`.
+2. see [this note](#setting-template) about defining `options.template`.
 
 [⬆ back to top](#table-of-contents)
 
@@ -41,13 +43,20 @@ Please download the [latest release](https://github.com/arashdalir/datetimepicke
 
 [⬆ back to top](#table-of-contents)
 
+## Internal Parameters
+
+### `$.DateTimePicker.views`
+can be any of `'time'`, `'days'`, `'weeks'`, `'months'`, `'years'`, `'decades'` respectively to begin the selection from day, month, year or decade level.
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to internal parameters](#internal-parameters)
+
 ## Options
 List: 
 - [`allow`](#allow)
 - [`buttons`](#buttons)
 - [`classes`](#classes)
 - [`debug`](#debug)
-- [`displayWeeks`](#displayWeeks)
+- [`displayWeeks`](#displayweeks)
 - [`hooks`](#hooks)
 - [`inline`](#inline)
 - [`locale`](#locale)
@@ -60,12 +69,12 @@ List:
 - [`view`](#view)
  
 ### `allow`
-if set, it should be an object with `$.DateTimePicker.views` values as keys, and acceptable `moment.js` formats as values, which will then allow setting output on different views - default = `null`
+if set, it should be an object with [`$.DateTimePicker.views`](#datetimepickerviews) values as keys, and acceptable `moment.js` formats as values, which will then allow setting output on different views - default = `null`
 
-> Refer to [note2](#note2) for more information about selecting/displaying `weeks`.
+> Refer to [this note](#showingselecting-weeks) for more information about selecting/displaying `weeks`.
 
-#### Note1
-This option MUST be set for each instance in order to tell it which views are allowed and which values can be selected. IF no value is set (is with default value), no date/time can be picked and the picker will not drill down. 
+> #### Setting `allow` Value
+> This option MUST be set for each instance in order to tell it which views are allowed and which values can be selected. IF no value is set (is with default value), no date/time can be picked and the picker will not drill down. 
 ([read more notes](#usage-notes))
 
 [⬆ back to top](#table-of-contents) or 
@@ -92,8 +101,8 @@ will force the placeholder to stay open after a blur or click outside the picker
 ### `displayWeeks`
 Defines if plugin should show week numbers. 
 
-#### Note2
-if `weeks` is set in `options.allow`, then `displayWeeks` is automatically turned on, as selecting weeks is made possible by allowing users to click on the week numbers. ([read more notes](#usage-notes))
+> #### Showing/Selecting `weeks`
+> if `weeks` is set in `options.allow`, then `displayWeeks` is automatically turned on, as selecting weeks is made possible by allowing users to click on the week numbers. ([read more notes](#usage-notes))
 
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to options](#options)
@@ -154,8 +163,8 @@ if set to true, the placeholder will not be automatically hidden when a click/bl
 ### `template`
 HTML template for the plugin view - default is `null`
 
-#### Note3
-This value **MUST** be set for each instance or else the plugin will show nothing. As the plugin can be installed on any path, the option cannot have a working default value. Nevertheless, the value can be globally set using something like 
+> #### Setting Template
+> This value **MUST** be set for each instance or else the plugin will show nothing. As the plugin can be installed on any path, the option cannot have a working default value. Nevertheless, the value can be globally set using something like:
 
 ```javascript
 $.DateTimePicker.defaultOptions.template = $.DateTimePicker.getTemplate('../src/html/datetimepicker.html');
@@ -188,7 +197,7 @@ let example2 = {
 ### `view`
 sets the view-level which is used when the picker is shown. default: `'days'`
 
-can be any of `'time'`, `'days'`, `'weeks'`, `'months'`, `'years'`, `'decades'` respectively to begin the selection from day, month, year or decade level.
+can be any of [`$.DateTimePicker.views`](#datetimepickerviews)
 
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to options](#options)
@@ -204,8 +213,10 @@ All the hook callbacks have the value "this" referring to the DateTimePicker obj
 ```
 
 - [`init`](#init)
+- [`hide`](#hide)
 - [`set`](#set)
-- [`showCalendar`](#showCalendar)
+- [`show`](#show)
+- [`showCalendar`](#showcalendar)
 
 ### `init`
 executed at the end of initiation process - prototype:
@@ -213,6 +224,17 @@ executed at the end of initiation process - prototype:
 /**
 */
 function init(){}
+```
+
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to hooks](#plugin-hooks)
+
+### `hide`
+executed after `hide()` event is executed. please note that `hide()` event doesn't necessarily hide the `$placehoder`, as hiding it is dependent on [`this.options.inline`](#inline) value; nevertheless, the hook is executed regardless. 
+```javascript
+/**
+*/
+function hide(){}
 ```
 
 [⬆ back to top](#table-of-contents) or 
@@ -228,8 +250,8 @@ executed after the plugin has set the value - prototype:
 function set(datetime, view){}
 ```
 
+> **NOTE:** this function is not executed on "change" events. to run it on change, please use an event-listener like:
 
-**NOTE:** this function is not executed on "change" events. to run it on change, please use an event-listener like:
 ```javascript
 $('#example').DateTimePicker().on(
 	"change",
@@ -240,6 +262,18 @@ $('#example').DateTimePicker().on(
 		base.callHook("set", $this);
 	}
 );
+```
+
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to hooks](#plugin-hooks)
+
+### `show`
+executed after placeholder's show() event is finished. can be used to adjust `view`
+```javascript
+/**
+* @param view - which view is used for the preparation of widget
+*/
+function show(view){}
 ```
 
 [⬆ back to top](#table-of-contents) or 
@@ -257,6 +291,51 @@ function showCalendar($placeholder, view){}
 
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to hooks](#plugin-hooks)
+
+## Manipulators
+In order to ease temporary runtime manipulation of plugin behavior, a new parameter-set is defined. Following parameters can be set to affect plugin's behavior:
+
+- [`disableHooks`](#disablehooks)
+- [`maxDrillDown`](#maxdrilldown)
+
+To use the manipulators, their values can be set as following:
+```javascript
+let $picker = $('#date-picker');
+$picker.DateTimePicker('manipulate', {disableHooks: true});
+// do your thing
+$picker.DateTimePicker('manipulate', {disableHooks: false});
+```
+
+### `disableHooks`
+if set to `true`, hooks will not be executed. can be used to stop recursive call of hooks if they (in)directly cause each other to be triggered.
+```javascript
+let $picker = $('#date-picker');
+$picker.DateTimePicker('manipulate', {disableHooks: true});
+$picker.data("DateTimePicker").show(); // `hooks.show` won't be executed.
+$picker.DateTimePicker('manipulate', {disableHooks: false});
+```
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to manipulators](#manipulators)
+
+### `maxDrillDown`
+can be any of [`$.DateTimePicker.views`](#datetimepickerviews). the views allowing a more accurate value selection will not be shown. Setting value directly is not affected. this can be used, for example, to define view-[`triggers`](#trigger). 
+```javascript
+$picker = $('#date-picker');
+$picker.on('focus', function(){
+	$picker.DateTimePicker('manipulate', {maxDrillDown: null});
+});
+
+$('#month_picker_trigger').on('click', function(){
+	$picker.DateTimePicker('manipulate', {maxDrillDown: 'months'});
+});
+
+$('#day_picker_trigger').on('click', function(){
+	$picker.DateTimePicker('manipulate', {maxDrillDown: 'days'});
+});
+```
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to manipulators](#manipulators)
+
 
 ## ToDos
  [ ] _Better `Options` Validation:_ invalid formats (for example `DD/Y` or `H:ss` should be detected and reported)

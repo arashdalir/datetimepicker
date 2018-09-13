@@ -20,6 +20,11 @@
 		base.triggers = {};
 		base.viewpoint = null;
 
+		base.manipulators = {
+			disableHooks: false,
+			maxDrillDown: null
+		};
+
 		// Access to jQuery and DOM versions of element
 		base.$el = $(el);
 		base.el = el;
@@ -276,7 +281,7 @@
 
 		base.callHook = function (hook){
 			let args = Array.prototype.slice.call(arguments, 1);
-			if(base.hooks)
+			if(base.hooks && !base.manipulators.disableHooks)
 			{
 				if(base.hooks.hasOwnProperty(hook))
 				{
@@ -323,7 +328,8 @@
 			case "hooks":
 				if(typeof options === typeof {})
 				{
-					for(let event in options)
+					let event = null;
+					for(event in options)
 					{
 						if(options.hasOwnProperty(event))
 						{
@@ -342,7 +348,6 @@
 									base.hooks[event].push(callback);
 								}
 							}
-							break;
 						}
 					}
 				}
@@ -359,6 +364,19 @@
 							{
 								base.events[event].apply(this, options[event]);
 							}
+						}
+					}
+				}
+				break;
+
+			case 'manipulate':
+				for(let type in options)
+				{
+					if (options.hasOwnProperty(type))
+					{
+						if (base.manipulators.hasOwnProperty(type))
+						{
+							base.manipulators[type] = options[type];
 						}
 					}
 				}
@@ -466,6 +484,7 @@
 			for(let i = 0; i < checks.length; i++)
 			{
 				view = checks[i];
+
 				if(ret = (base.options.allow && base.options.allow.hasOwnProperty(view)))
 				{
 					break;
@@ -679,6 +698,8 @@
 				{
 					let cur = $.DateTimePicker.views[index];
 
+					index += offset;
+
 					if(cur)
 					{
 						if(base.allows(cur))
@@ -691,13 +712,10 @@
 					{
 						break;
 					}
-
-					index += offset;
 				}
 			}
 
 			return next;
-
 		};
 
 		base.getView = function (view, offset){
@@ -1252,6 +1270,7 @@
 		base.handleActions = function (event, $target){
 			let action = $target.data(base.constants.data.action);
 			let current = $target.data(base.constants.data.current);
+			let targetView = null;
 
 			if(typeof current === typeof undefined)
 			{
@@ -1375,7 +1394,7 @@
 							current.add(increment, unit);
 						}
 						current.startOf(unit);
-						base.showCalendar(current, base.getView(view, -1));
+						targetView =  base.getView(view, -1);
 					}
 					break;
 
@@ -1387,7 +1406,7 @@
 						// no higher level after decades, stay on `years`-view
 						view = 'years';
 					}
-					base.showCalendar(current, base.getView(view));
+					targetView = base.getView(view);
 					break;
 
 				default:
@@ -1408,7 +1427,7 @@
 						offset = 0;
 					}
 
-					let targetView = base.getView(view, offset);
+					targetView = base.getView(view, offset);
 
 					// `weeks` is a virtual view. if `weeks`-view is the target view and not allowed, check if
 					// `days`-view is allowed.
@@ -1419,11 +1438,30 @@
 						targetView = 'days';
 					}
 
-					if(allowed || base.getNextAllowed(view, offset))
+					if(!allowed && !base.getNextAllowed(view, offset))
 					{
-						base.showCalendar(current, targetView, view);
+						targetView = null;
 					}
 					break;
+				}
+
+				if (base.manipulators.maxDrillDown && targetView)
+				{
+					let maxIndex = $.DateTimePicker.views.indexOf(base.manipulators.maxDrillDown);
+					let viewIndex = $.DateTimePicker.views.indexOf(targetView);
+
+					if (maxIndex !== -1)
+					{
+						if (maxIndex > viewIndex)
+						{
+							targetView = base.manipulators.maxDrillDown;
+						}
+					}
+				}
+
+				if (targetView)
+				{
+					base.showCalendar(current, targetView);
 				}
 			}
 		};
@@ -1633,12 +1671,16 @@
 			clearTimeout(this.blurTimeout);
 			this.$el.data(this.constants.data.focus, true);
 			this.showCalendar(undefined, view);
+
+			this.callHook('show', view);
 		},
 		hide: function (){
 			if(!this.options.inline)
 			{
 				this.hideView(this.getPlaceholder());
 			}
+
+			this.callHook('hide');
 		},
 		set: function (datetime, view){
 			let format = this.getFormat(view);
