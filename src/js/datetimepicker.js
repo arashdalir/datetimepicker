@@ -1,3 +1,4 @@
+//language=JavaScript
 /**
  *
  * @License: MIT
@@ -1758,8 +1759,8 @@
 			}
 		}),
 		dayBegin: new $.DateTimePicker.Button({
-			name: 'midnight',
-			label: 'Midnight',
+			name: 'day_begin',
+			label: 'Day Begin',
 			/**
 			 * @param {$.DateTimePicker} picker
 			 */
@@ -1772,6 +1773,40 @@
 						minute: 0,
 						second: 0,
 						millisecond: 0
+					});
+					picker.events.set.call(picker, current, null);
+					picker.$el.change();
+				}
+			},
+			/**
+			 * @param {$.DateTimePicker} picker
+			 */
+			show: function(picker){
+				if (picker instanceof $.DateTimePicker)
+				{
+					return (picker.allows("time") && picker.viewpoint === 'days');
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}),
+		dayEnd: new $.DateTimePicker.Button({
+			name: 'day_end',
+			label: 'Day End',
+			/**
+			 * @param {$.DateTimePicker} picker
+			 */
+			onClick: function (picker){
+				if(picker instanceof $.DateTimePicker)
+				{
+					let current = moment(picker.$el.val());
+					current.set({
+						hour: 23,
+						minute: 59,
+						second: 59,
+						millisecond: 99999999999
 					});
 					picker.events.set.call(picker, current, null);
 					picker.$el.change();

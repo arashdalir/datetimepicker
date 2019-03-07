@@ -473,17 +473,14 @@ it's possible to change a button's settings using this function. but they won't 
 currently, 2 default buttons are defined in this class:
 
 1. `now` button will set date/time values to current moment.
-1. `dayBegin` aka "midnight" button will set the time to `0:00:00.000` of selected day.  by default it's only available (i.e. `show`n) if `time` selection is allowed. 
+1. `dayBegin` button will set the time to `0:00:00.000` of selected day.  by default it's only available (i.e. `show`n) if `time` selection is allowed. 
+1. `dayEnd` button will set the time to `23:59:59.99999999` of selected day.  by default it's only available (i.e. `show`n) if `time` selection is allowed. 
 
 ```javascript
 $.DateTimePicker.DefaultButtons = {
 	now: new $.DateTimePicker.Button({
 		name: 'now',
 		label: 'Now',
-		/**
-		 *
-		 * @param {$.DateTimePicker} picker
-		 */
 		onClick: function (picker){
 			if(picker instanceof $.DateTimePicker)
 			{
@@ -493,32 +490,25 @@ $.DateTimePicker.DefaultButtons = {
 			}
 		}
 	}),
-	dayBegin: new $.DateTimePicker.Button({
-		name: 'midnight',
-		label: 'Midnight',
-		/**
-		 *
-		 * @param {$.DateTimePicker} picker
-		 */
-		onClick: function (picker){
-			if(picker instanceof $.DateTimePicker)
-			{
-				let current = moment(picker.$el.val());
-				current.set({
-					hour: 0,
-					minute: 0,
-					second: 0,
-					millisecond: 0
-				});
-				picker.events.set.call(picker, current, null);
-				picker.$el.change();
-			}
-		},
-		/**
-		 * @param {$.DateTimePicker} picker
-		 */
-		show: function(picker){
-			if (picker instanceof $.DateTimePicker)
+    dayBegin: new $.DateTimePicker.Button({
+        name: 'day_begin',
+        label: 'Day Begin',
+        onClick: function (picker){
+            if(picker instanceof $.DateTimePicker)
+            {
+                let current = moment(picker.$el.val());
+                current.set({
+                    hour: 0,
+                    minute: 0,
+                    second: 0,
+                    millisecond: 0
+                });
+                picker.events.set.call(picker, current, null);
+                picker.$el.change();
+            }
+        },
+        show: function(picker){
+            if (picker instanceof $.DateTimePicker)
             {
                 return (picker.allows("time") && picker.viewpoint === 'days');
             }
@@ -526,8 +516,36 @@ $.DateTimePicker.DefaultButtons = {
             {
                 return false;
             }
-		}
-	})
+        }
+    }),
+    dayEnd: new $.DateTimePicker.Button({
+        name: 'day_end',
+        label: 'Day End',
+        onClick: function (picker){
+            if(picker instanceof $.DateTimePicker)
+            {
+                let current = moment(picker.$el.val());
+                current.set({
+                    hour: 23,
+                    minute: 59,
+                    second: 59,
+                    millisecond: 99999999999
+                });
+                picker.events.set.call(picker, current, null);
+                picker.$el.change();
+            }
+        },
+        show: function(picker){
+            if (picker instanceof $.DateTimePicker)
+            {
+                return (picker.allows("time") && picker.viewpoint === 'days');
+            }
+            else
+            {
+                return false;
+            }
+        }
+    })
 };
 ```
 
