@@ -13,8 +13,8 @@ A customizable date-time-picker using jQuery + jQuery-ui and moment.js.
 - [Hooks](#plugin-hooks)
 - [Manipulators](#manipulators)
 - [Defining Buttons](#defining-buttons)
-	- [`$.DateTimePicker.Button`](#$.datetimepicker.button)
-	- [`$.DateTimePicker.DefaultButtons`](#$.)
+	- [`$.DateTimePicker.Button`](#datetimepickerbutton)
+	- [`$.DateTimePicker.DefaultButtons`](#datetimepickerdefaultbuttons)
 - [ToDos](#todos)
 - [License](#license)
 
@@ -228,45 +228,78 @@ can be any of [`$.DateTimePicker.views`](#datetimepickerviews)
 
 ## Functions
 
+- [`callHook`](#callhookhookname-arg1-arg2-)
+- [`isDisabled`](#isdisabledtarget)
+- [`getPlaceholder`](#getplaceholder)
+- [`getFormat`](#getformatview)
+- [`allows`](#allowsview-checktime)
+- [`matchValueView`](#matchvalueviewdatetime)
+- [`getDateTime`](#getdatetime)
+- [`showCalendar`](#showcalendardatetime-view)
+- [`drawButtons`](#drawbuttons)
+- [`getNextAllowed`](#getnextallowedview-offset)
+- [`isBetweenRange`](#isbetweenrangedatetime-view)
+- [`setOptions`](#setoptionsoptions)
+
 ### `callHook(hookName, arg1, arg2, ...)`
 it checks whether [`disableHooks` manipulator](#disablehooks) is set or not. if not, then looks for defined [`hooks`](#hooks) and executes it using given parameters.
 > Note: called functions have access to the instance using `this`
 
 ### `isDisabled($target)`
 `$target` is a DOM element, which when `click`ed, will set the day, month or year in input field. this function checks if the given `$target` is disabled, which usually means it's outside the allowed date-range (defined using [min](#min) and [max](#max))
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to functions](#functions)
 
 ### `getPlaceholder()`
 returns the widget placeholder. if none is defined for the instance, then it will first create it.
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to functions](#functions)
 
 ### `getFormat(view)`
 it returns the [`allow`](#allow)ed format for a given `view` or `undefined`.
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to functions](#functions)
 
 ### `allows(view, checkTime)`
 it returns a `boolean` view indicting if the given `view` is defined as [`allow`](#allow)ed. 
 - `checkTime` is only useful if `view === 'days'`, and it will check if either `days` or `time` is [`allow`](#allow)ed
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to functions](#functions)
 
 ### `matchValueView(datetime)`
 checks if the provided `datetime` value matches any of the [`allow`](#allow)ed formats.
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to functions](#functions)
 
 ### `getDateTime()`
 returns a `moment.js` object containing either the value of input-field or if not set, current date-time.
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to functions](#functions)
 
 ### `showCalendar(datetime, view)`
 shows the widget opened with `view` as view-point, set to `datetime`
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to functions](#functions)
 
 ### `drawButtons()`
 creates buttons defined in [`options.buttons`](#buttons).
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to functions](#functions)
 
 ### `getNextAllowed(view, offset)`
 > to be documented
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to functions](#functions)
 
 ### `isBetweenRange(datetime, view)`
 checks whether the value provided in `datetime`  is between [`min`](#min) and [`max`](#max) value. to do so, it adjusts the precision of `datetime` and current set value to `view` level, i.e. if for example `view === 'months'`, it only checks the dates in months level and `day` and `time` values won't be considered while checking.
 
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to functions](#functions)
+
 ### `setOptions(options)`
 merges `events` and options provided in `options` into current instance. it activates new `hooks` (if any defined) and attaches default event handlers to the instance. it also prepares and initiates the [`trigger`](#trigger)s
   
-
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to functions](#functions)
 
