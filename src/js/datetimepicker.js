@@ -177,6 +177,9 @@
 
 			if(letBlur)
 			{
+				clearTimeout(base.inputChangeTimeout);
+				clearTimeout(base.timeChangeTimeout);
+
 				base.blurTimeout = setTimeout(
 					function (){
 						base.events.hide.call(base);
@@ -487,8 +490,6 @@
 
 			if(checkTime && view === 'days')
 			{
-				let $timeInput = base.getPlaceholder()
-					.find('.datetimepicker-time');
 				checks.push('time');
 			}
 
@@ -555,7 +556,7 @@
 		 * @return {moment}
 		 */
 		base.getDateTime = function (){
-			let datetime = null;
+			let datetime;
 
 			if(!(datetime = base.$el.val()))
 			{
@@ -1250,8 +1251,6 @@
 
 			$yearsList.html('');
 
-			let years = moment.monthsShort();
-
 			for(let i = decadeBegin.get('year'); i <= decadeEnd.get('year'); i++)
 			{
 				let $year = $("<div>")
@@ -1399,8 +1398,6 @@
 					view = 'days';
 					break;
 				}
-
-				let format = base.getFormat(view);
 
 				if(!moment.isMoment(current))
 				{
@@ -1844,6 +1841,8 @@
 	$.DateTimePicker.defaultEvents = {
 		show: function (view){
 			clearTimeout(this.blurTimeout);
+			clearTimeout(this.inputChangeTimeout);
+			clearTimeout(this.timeChangeTimeout);
 			this.$el.data(this.constants.data.focus, true);
 			this.showCalendar(undefined, view);
 

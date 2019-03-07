@@ -18,6 +18,15 @@
 			color:       #FF0000;
 			font-weight: bold;
 		}
+
+		.now-button{
+			padding: 5px;
+			margin: 0 10px;
+			color: white;
+			background: darkgreen;
+			border-collapse: collapse;
+			border: 1px solid lightgreen;
+		}
 	</style>
 </head>
 <body>
@@ -234,7 +243,7 @@
 						buttons:[
 							$.DateTimePicker.DefaultButtons.dayBegin,
 							"<br/>",
-							$.DateTimePicker.DefaultButtons.now
+							$.DateTimePicker.DefaultButtons.now.setOptions({className: 'now-button'})
 						]
 					});
 
