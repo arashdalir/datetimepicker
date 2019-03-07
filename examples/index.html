@@ -225,6 +225,19 @@
 						}
 					});
 
+				$("#date-picker9")
+					.DateTimePicker({
+						allow: {
+							time: "Y-MM-DD HH:mm:ss.SSS",
+							months: "Y-MM"
+						},
+						buttons:[
+							$.DateTimePicker.DefaultButtons.dayBegin,
+							"<br/>",
+							$.DateTimePicker.DefaultButtons.now
+						]
+					});
+
 				/*
 				$("#date-picker7-month-trigger")
 					.on(
@@ -305,6 +318,12 @@
 	<h2>Date-Time Picker</h2>
 	<h3>both date and time must be selected</h3>
 	<input placeholder="" id="date-picker8" type="text"/>
+</div>
+<div class="example">
+	<h1>Example 9</h1>
+	<h2>Date-Time Picker</h2>
+	<h3>With Now, Day-Begin and Day-End buttons</h3>
+	<input placeholder="" id="date-picker9" type="text"/>
 </div>
 
 </body>

@@ -16,9 +16,11 @@
 		base.events = null;
 		base.blurTimeout = null;
 		base.timeChangeTimeout = null;
+		base.inputChangeTimeout = null;
 		base.setByPlugin = false;
 		base.triggers = {};
 		base.viewpoint = null;
+		base.currentView = null;
 
 		base.manipulators = {
 			disableHooks: false,
@@ -147,7 +149,7 @@
 			return tFormat;
 		}
 
-		function doBlur(evt)
+		function doBlur(evt, base)
 		{
 			let letBlur = false;
 			let $target = $(evt.target);
@@ -155,7 +157,7 @@
 			base.$el.data(base.constants.data.focus, false);
 			let self = isTargetSelf($target);
 
-			if(evt.type === 'blur' && self)
+			if(evt.type === 'blur' && !self)
 			{
 				letBlur = true;
 			}
@@ -175,9 +177,12 @@
 
 			if(letBlur)
 			{
-				base.blurTimeout = setTimeout(function (){
-					base.events.hide.call(base);
-				}, 200);
+				base.blurTimeout = setTimeout(
+					function (){
+						base.events.hide.call(base);
+					},
+					base.options.timeouts.blur
+				);
 			}
 		}
 
@@ -217,16 +222,22 @@
 						{
 							return;
 						}
+
 						if(base.timeChangeTimeout)
 						{
 							clearTimeout(base.timeChangeTimeout);
+						}
+
+						if(base.inputChangeTimeout)
+						{
+							clearTimeout(base.inputChangeTimeout);
 						}
 
 						base.timeChangeTimeout = setTimeout(
 							function (){
 								handleChanges(evt);
 							},
-							500
+							base.options.timeouts.timeInputChange
 						);
 					}
 				);
@@ -286,7 +297,7 @@
 				if(base.hooks.hasOwnProperty(hook))
 				{
 					let hooks = base.hooks[hook];
-					if(typeof hooks !== typeof [])
+					if(!Array.isArray(hooks))
 					{
 						hooks = [hooks];
 					}
@@ -338,7 +349,7 @@
 							if(typeof callback === typeof function (){
 							})
 							{
-								if(typeof base.hooks[event] !== typeof [])
+								if(!Array.isArray(base.hooks[event]))
 								{
 									base.hooks[event] = [base.hooks[event]];
 								}
@@ -372,9 +383,9 @@
 			case 'manipulate':
 				for(let type in options)
 				{
-					if (options.hasOwnProperty(type))
+					if(options.hasOwnProperty(type))
 					{
-						if (base.manipulators.hasOwnProperty(type))
+						if(base.manipulators.hasOwnProperty(type))
 						{
 							base.manipulators[type] = options[type];
 						}
@@ -484,8 +495,9 @@
 			for(let i = 0; i < checks.length; i++)
 			{
 				view = checks[i];
+				ret = (base.options.allow && base.options.allow.hasOwnProperty(view));
 
-				if(ret = (base.options.allow && base.options.allow.hasOwnProperty(view)))
+				if(ret)
 				{
 					break;
 				}
@@ -538,6 +550,10 @@
 			return result;
 		};
 
+		/**
+		 *
+		 * @return {moment}
+		 */
 		base.getDateTime = function (){
 			let datetime = null;
 
@@ -605,7 +621,7 @@
 
 			if(view)
 			{
-				let viewpoint = null;
+				let viewpoint = '';
 
 				switch(view)
 				{
@@ -628,6 +644,7 @@
 				}
 
 				base.viewpoint = viewpoint;
+				base.currentView = view;
 
 				base.hideView($views.not('.datetimepicker-' + viewpoint));
 				base.showView(
@@ -638,7 +655,7 @@
 				if(base.allows("time") && viewpoint === 'days')
 				{
 					let tFormat = extractTimeFormat(base.options.allow['time']);
-					if (tFormat)
+					if(tFormat)
 					{
 						let $timePicker = $views.filter('.datetimepicker-timepicker');
 						base.showView($timePicker);
@@ -657,18 +674,7 @@
 
 				if(base.options.buttons)
 				{
-					let $buttons = $views.filter('.datetimepicker-buttons');
-
-					for(let b in base.options.buttons)
-					{
-						if(base.options.buttons.hasOwnProperty(b))
-						{
-							let button = base.options.buttons[b];
-							$buttons.append(button);
-						}
-					}
-
-					base.showView($buttons);
+					base.drawButtons();
 				}
 
 				base.callHook("showCalendar", $placeholder, view);
@@ -676,6 +682,71 @@
 				base.showView($placeholder);
 				$placeholder.position(position);
 			}
+		};
+
+		base.drawButtons = function(){
+			let $buttons = base.getPlaceholder().find('.datetimepicker-view').filter('.datetimepicker-buttons');
+
+			$buttons.html('');
+
+			for(let b in base.options.buttons)
+			{
+				if(base.options.buttons.hasOwnProperty(b))
+				{
+					let button = base.options.buttons[b];
+
+					if(button instanceof $.DateTimePicker.Button)
+					{
+						let show = button.show;
+
+						if(typeof button.show === typeof function (){
+						})
+						{
+							show = button.show.call(button, base);
+						}
+
+						if(show)
+						{
+							let $button = $("<button>");
+
+							/**
+							 * @type {$.DateTimePicker.Button}
+							 */
+							if(button.className)
+							{
+								$button.addClass(button.className);
+							}
+
+							if(button.name)
+							{
+								$button.attr('name', button.name);
+							}
+
+							if(button.label)
+							{
+								$button.html(button.label);
+							}
+
+							if(typeof button.onClick === typeof function (){
+							})
+							{
+								$button.on("click", function (){
+									button.onClick.call(button, base)
+								});
+							}
+
+							$buttons.append($button);
+
+						}
+					}
+					else
+					{
+						$buttons.append(button);
+					}
+				}
+			}
+
+			base.showView($buttons);
 		};
 
 		base.getNextAllowed = function (view, offset){
@@ -1357,7 +1428,7 @@
 						{
 							if(forcedTime)
 							{
-								time = '0:00:00.000';
+								time = '00:00:00.000';
 							}
 							$timeInput.attr('manual_unset', true);
 						}
@@ -1394,7 +1465,7 @@
 							current.add(increment, unit);
 						}
 						current.startOf(unit);
-						targetView =  base.getView(view, -1);
+						targetView = base.getView(view, -1);
 					}
 					break;
 
@@ -1445,21 +1516,21 @@
 					break;
 				}
 
-				if (base.manipulators.maxDrillDown && targetView)
+				if(base.manipulators.maxDrillDown && targetView)
 				{
 					let maxIndex = $.DateTimePicker.views.indexOf(base.manipulators.maxDrillDown);
 					let viewIndex = $.DateTimePicker.views.indexOf(targetView);
 
-					if (maxIndex !== -1)
+					if(maxIndex !== -1)
 					{
-						if (maxIndex > viewIndex)
+						if(maxIndex > viewIndex)
 						{
 							targetView = base.manipulators.maxDrillDown;
 						}
 					}
 				}
 
-				if (targetView)
+				if(targetView)
 				{
 					base.showCalendar(current, targetView);
 				}
@@ -1483,7 +1554,7 @@
 
 			let currentOptions = (base.options === null)? $.DateTimePicker.defaultOptions:base.options;
 			let currentEvents = (base.events === null)? $.DateTimePicker.defaultEvents:base.events;
-			base.options = $.extend({}, currentOptions, options);
+			base.options = $.extend(true, {}, currentOptions, options);
 			base.events = $.extend({}, currentEvents, events);
 
 			let min_max = ['min', 'max'];
@@ -1587,10 +1658,25 @@
 
 					if(!base.setByPlugin)
 					{
-						let view = base.getView();
-						let datetime = base.getDateTime();
-						base.showCalendar(datetime);
-						base.callHook("set", datetime, view);
+						if(base.inputChangeTimeout)
+						{
+							clearTimeout(base.inputChangeTimeout)
+						}
+
+						if(base.timeChangeTimeout)
+						{
+							clearTimeout(base.timeChangeTimeout)
+						}
+
+						base.inputChangeTimeout = setTimeout(
+							function (){
+								let view = base.getView();
+								let datetime = base.getDateTime();
+								base.showCalendar(datetime);
+								base.callHook("set", datetime, view);
+							},
+							base.options.timeouts.valueInputChange
+						);
 					}
 				});
 
@@ -1602,7 +1688,7 @@
 
 			base.$el.on(
 				"blur", function (evt){
-					doBlur(evt);
+					doBlur(evt, base);
 				}
 			);
 
@@ -1610,7 +1696,7 @@
 				.on(
 					"click",
 					function (evt){
-						doBlur(evt);
+						doBlur(evt, base);
 					}
 				);
 
@@ -1624,6 +1710,90 @@
 
 		// Run initializer
 		base.init();
+	};
+
+	$.DateTimePicker.Button = function (options){
+		let base = this;
+
+		base.$el = $(base);
+		base.el = base;
+
+		base.name = '';
+		base.label = '';
+		base.className = '';
+		base.onClick = null;
+		base.show = true;
+
+		base.setOptions = function (options){
+			for(let o in options)
+			{
+				if(options.hasOwnProperty(o))
+				{
+					if(base.hasOwnProperty(o))
+					{
+						base[o] = options[o];
+					}
+				}
+			}
+
+			return base;
+		};
+
+		base.setOptions(options);
+		return base;
+	};
+
+	$.DateTimePicker.DefaultButtons = {
+		now: new $.DateTimePicker.Button({
+			name: 'now',
+			label: 'Now',
+			/**
+			 *
+			 * @param {$.DateTimePicker} picker
+			 */
+			onClick: function (picker){
+				if(picker instanceof $.DateTimePicker)
+				{
+					let current = moment();
+					picker.events.set.call(picker, current, null);
+					picker.$el.change();
+				}
+			}
+		}),
+		dayBegin: new $.DateTimePicker.Button({
+			name: 'midnight',
+			label: 'Midnight',
+			/**
+			 * @param {$.DateTimePicker} picker
+			 */
+			onClick: function (picker){
+				if(picker instanceof $.DateTimePicker)
+				{
+					let current = moment(picker.$el.val());
+					current.set({
+						hour: 0,
+						minute: 0,
+						second: 0,
+						millisecond: 0
+					});
+					picker.events.set.call(picker, current, null);
+					picker.$el.change();
+				}
+			},
+			/**
+			 * @param {$.DateTimePicker} picker
+			 */
+			show: function(picker){
+				if (picker instanceof $.DateTimePicker)
+				{
+					return (picker.allows("time") && picker.viewpoint === 'days');
+				}
+				else
+				{
+					return false;
+				}
+			}
+		})
 	};
 
 	$.DateTimePicker.setLocale = function (base){
@@ -1662,6 +1832,11 @@
 		position: null,
 		sticky: false,
 		template: null,
+		timeouts: {
+			blur: 200,
+			valueInputChange: 500,
+			timeInputChange: 500
+		},
 		trigger: null,
 		view: 'days'
 	};
@@ -1683,6 +1858,11 @@
 			this.callHook('hide');
 		},
 		set: function (datetime, view){
+			if(view === null && this.currentView)
+			{
+				view = this.currentView;
+			}
+
 			let format = this.getFormat(view);
 			if(!moment.isMoment(datetime))
 			{

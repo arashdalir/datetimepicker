@@ -9,8 +9,12 @@ A customizable date-time-picker using jQuery + jQuery-ui and moment.js.
 - [Dependencies](#dependencies)
 - [Internal Parameters](#internal-parameters)
 - [Options](#options)
+- [Functions](#functions)
 - [Hooks](#plugin-hooks)
 - [Manipulators](#manipulators)
+- [Defining Buttons](#defining-buttons)
+	- [`$.DateTimePicker.Button`](#$.datetimepicker.button)
+	- [`$.DateTimePicker.DefaultButtons`](#$.)
 - [ToDos](#todos)
 - [License](#license)
 
@@ -64,6 +68,10 @@ List:
 - [`min`](#min)
 - [`position`](#position)
 - [`sticky`](#sticky)
+- [`timeouts`](#timeouts)
+	- [`blur`](#blur-timeout)
+	- [`valueInputChange`](#valueinputchange-timeout)
+	- [`timeInputChange`](#timeinputchange-timeout)
 - [`template`](#template)
 - [`trigger`](#trigger)
 - [`view`](#view)
@@ -159,6 +167,22 @@ if set to true, the placeholder will not be automatically hidden when a click/bl
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to options](#options)
 
+### `timeouts`
+defines the timeouts for different activities in the plugin:
+
+> Note: Changing these values might drastically affect the usability as these values are responsible for disappearance of the widget and updating it after values in input fields are changed. it might also result in inconsistencies in usability and input-data-loss, as it will cause the values in input fields to change after given time on inactivity in another field.  
+
+#### `blur` Timeout
+sets the time in `ms` between clicking outside the widget / changing focus of input-field and hiding of the widget - default: `200`
+
+#### `valueInputChange` Timeout
+sets the time in `ms` between changing the value in the input-field (defined by the selector) and it affecting the widget's look - prevents constant refreshes when manually changing the date-time value - default: `500`
+
+#### `timeInputChange` Timeout
+sets the time in `ms` between changing the value in `time` field and it affecting time portion of input-field - prevents constant changing of input-value; which in return would refresh the widget - default: `500`
+
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to options](#options)
 
 ### `template`
 HTML template for the plugin view - default is `null`
@@ -201,6 +225,50 @@ can be any of [`$.DateTimePicker.views`](#datetimepickerviews)
 
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to options](#options)
+
+## Functions
+
+### `callHook(hookName, arg1, arg2, ...)`
+it checks whether [`disableHooks` manipulator](#disablehooks) is set or not. if not, then looks for defined [`hooks`](#hooks) and executes it using given parameters.
+> Note: called functions have access to the instance using `this`
+
+### `isDisabled($target)`
+`$target` is a DOM element, which when `click`ed, will set the day, month or year in input field. this function checks if the given `$target` is disabled, which usually means it's outside the allowed date-range (defined using [min](#min) and [max](#max))
+
+### `getPlaceholder()`
+returns the widget placeholder. if none is defined for the instance, then it will first create it.
+
+### `getFormat(view)`
+it returns the [`allow`](#allow)ed format for a given `view` or `undefined`.
+
+### `allows(view, checkTime)`
+it returns a `boolean` view indicting if the given `view` is defined as [`allow`](#allow)ed. 
+- `checkTime` is only useful if `view === 'days'`, and it will check if either `days` or `time` is [`allow`](#allow)ed
+
+### `matchValueView(datetime)`
+checks if the provided `datetime` value matches any of the [`allow`](#allow)ed formats.
+
+### `getDateTime()`
+returns a `moment.js` object containing either the value of input-field or if not set, current date-time.
+
+### `showCalendar(datetime, view)`
+shows the widget opened with `view` as view-point, set to `datetime`
+
+### `drawButtons()`
+creates buttons defined in [`options.buttons`](#buttons).
+
+### `getNextAllowed(view, offset)`
+> to be documented
+
+### `isBetweenRange(datetime, view)`
+checks whether the value provided in `datetime`  is between [`min`](#min) and [`max`](#max) value. to do so, it adjusts the precision of `datetime` and current set value to `view` level, i.e. if for example `view === 'months'`, it only checks the dates in months level and `day` and `time` values won't be considered while checking.
+
+### `setOptions(options)`
+merges `events` and options provided in `options` into current instance. it activates new `hooks` (if any defined) and attaches default event handlers to the instance. it also prepares and initiates the [`trigger`](#trigger)s
+  
+
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to functions](#functions)
 
 ## Plugin Hooks
 Are used to extend the functionality of the plugin without the need to write parts of the code completely from the scratch.
@@ -337,13 +405,109 @@ $('#day_picker_trigger').on('click', function(){
 [⬅ back to manipulators](#manipulators)
 
 
-## ToDos
- [ ] _Better `Options` Validation:_ invalid formats (for example `DD/Y` or `H:ss` should be detected and reported)
+## Defining Buttons
+In order to facilitate defining buttons, a new class `$.DateTimePicker.Button` was defined. its properties will be used to create buttons automatically. in addition, `$.DateTimePicker.DefaultButtons` defines a few handy predefined functionalities (at the moment `now`-button, `midnight`-button) 
+
+### `$.DateTimePicker.Button`
+accepts following options:
+
+#### Button Options
+```javascript
+var options = {
+	className: '',
+	label: '',
+	name: '', 
+	onClick: function(dateTimePickerInstance){},
+	show: function(dateTimePickerInstance){} // can also be true or false
+};
+```
+
+these options will translate into: `<button class='{options.className}' name='{options.name}' onClick='{options.onClick([Date-Time-Picker-Instance])}'>{options.label}</button>`
+
+#### `button.show()` 
+will be evaluated before putting the button on the page. it can be any value which could be interpreted as boolean, or it could define a function, which should return `true` or `false`. if the value is evaluated to `false`, then the button will not appear in the widget.
+
+#### `button.setOptions()`
+it's possible to change a button's settings using this function. but they won't take effect if they buttons are already drawn, unless buttons are redrawn with [`drawButtons()`](#drawbuttons). 
+
+> Note: functions `show()` and `onClick()` have access to button's properties using `this`. each [button option]("#button-options) as accessible via `this[{optionName}]`, like for example `base.className`, `base.name`, etc.
+
  
- [ ] _Better Separation of View/Controller:_ the template and the controlling code are tightly coupled at the moment but using constant values for placeholders and selectors will make it possible to customize the view even more.
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to Defining Buttons](#defining-buttons)
+
+### `$.DateTimePicker.DefaultButtons`
+currently, 2 default buttons are defined in this class:
+
+1. `now` button will set date/time values to current moment.
+1. `dayBegin` aka "midnight" button will set the time to `0:00:00.000` of selected day.  by default it's only available (i.e. `show`n) if `time` selection is allowed. 
+
+```javascript
+$.DateTimePicker.DefaultButtons = {
+	now: new $.DateTimePicker.Button({
+		name: 'now',
+		label: 'Now',
+		/**
+		 *
+		 * @param {$.DateTimePicker} picker
+		 */
+		onClick: function (picker){
+			if(picker instanceof $.DateTimePicker)
+			{
+				let current = moment();
+				picker.events.set.call(picker, current, null);
+				picker.$el.change();
+			}
+		}
+	}),
+	dayBegin: new $.DateTimePicker.Button({
+		name: 'midnight',
+		label: 'Midnight',
+		/**
+		 *
+		 * @param {$.DateTimePicker} picker
+		 */
+		onClick: function (picker){
+			if(picker instanceof $.DateTimePicker)
+			{
+				let current = moment(picker.$el.val());
+				current.set({
+					hour: 0,
+					minute: 0,
+					second: 0,
+					millisecond: 0
+				});
+				picker.events.set.call(picker, current, null);
+				picker.$el.change();
+			}
+		},
+		/**
+		 * @param {$.DateTimePicker} picker
+		 */
+		show: function(picker){
+			if (picker instanceof $.DateTimePicker)
+            {
+                return (picker.allows("time") && picker.viewpoint === 'days');
+            }
+            else
+            {
+                return false;
+            }
+		}
+	})
+};
+```
+
+[⬆ back to top](#table-of-contents) or 
+[⬅ back to Defining Buttons](#defining-buttons)
+
+## ToDos
+* [ ] _Better `Options` Validation:_ invalid formats (for example `DD/Y` or `H:ss` should be detected and reported)
+ 
+* [ ] _Better Separation of View/Controller:_ the template and the controlling code are tightly coupled at the moment but using constant values for placeholders and selectors will make it possible to customize the view even more.
 
 ### Finished / Abandoned ToDos 
- [x] _Other Calendars' Support:_ for the time being, gregorian calendar is fully supported. Support of other calendars is provided by plugins like [Jalaali Calendar Plugin](https://github.com/jalaali/moment-jalaali) or [Hijri Calendar Plugin](https://github.com/xsoh/moment-hijri), but has not been tested.
+* [x] _Other Calendars' Support:_ for the time being, gregorian calendar is fully supported. Support of other calendars is provided by plugins like [Jalaali Calendar Plugin](https://github.com/jalaali/moment-jalaali) or [Hijri Calendar Plugin](https://github.com/xsoh/moment-hijri), but has not been tested.
  
  > Refer to [Plugins Section](https://momentjs.com/docs/#/plugins/) of Moment.js for more information.
 
