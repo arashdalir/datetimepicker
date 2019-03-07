@@ -27,6 +27,14 @@
 			border-collapse: collapse;
 			border: 1px solid lightgreen;
 		}
+		.day-end{
+			padding: 5px;
+			margin: 0 10px;
+			color: white;
+			background: darkred;
+			border-collapse: collapse;
+			border: 1px solid red;
+		}
 	</style>
 </head>
 <body>
@@ -242,8 +250,8 @@
 						},
 						buttons:[
 							$.DateTimePicker.DefaultButtons.dayBegin,
-							"<br/>",
-							$.DateTimePicker.DefaultButtons.now.setOptions({className: 'now-button'})
+							$.DateTimePicker.DefaultButtons.now.setOptions({className: 'now-button'}),
+							$.DateTimePicker.DefaultButtons.dayEnd.setOptions({className: 'day-end'})
 						]
 					});
 

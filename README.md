@@ -529,7 +529,7 @@ $.DateTimePicker.DefaultButtons = {
                     hour: 23,
                     minute: 59,
                     second: 59,
-                    millisecond: 99999999999
+                    millisecond: 999
                 });
                 picker.events.set.call(picker, current, null);
                 picker.$el.change();

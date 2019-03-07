@@ -1767,7 +1767,18 @@
 			onClick: function (picker){
 				if(picker instanceof $.DateTimePicker)
 				{
-					let current = moment(picker.$el.val());
+					let val = picker.$el.val();
+					let current;
+
+					if (val)
+					{
+						current = moment(val);
+					}
+					else
+					{
+						current = moment();
+					}
+
 					current.set({
 						hour: 0,
 						minute: 0,
@@ -1801,12 +1812,22 @@
 			onClick: function (picker){
 				if(picker instanceof $.DateTimePicker)
 				{
-					let current = moment(picker.$el.val());
+					let val = picker.$el.val();
+					let current;
+
+					if (val)
+					{
+						current = moment(val);
+					}
+					else
+					{
+						current = moment();
+					}
 					current.set({
 						hour: 23,
 						minute: 59,
 						second: 59,
-						millisecond: 99999999999
+						millisecond: 999
 					});
 					picker.events.set.call(picker, current, null);
 					picker.$el.change();
