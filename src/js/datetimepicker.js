@@ -247,6 +247,49 @@
 				);
 		}
 
+		function createButton(button){
+			let show = button.show;
+
+			if(typeof button.show === typeof function (){
+			})
+			{
+				show = button.show.call(button, base);
+			}
+
+			if(show)
+			{
+				let $button = $("<button>");
+
+				/**
+				 * @type {$.DateTimePicker.Button}
+				 */
+				if(button.className)
+				{
+					$button.addClass(button.className);
+				}
+
+				if(button.name)
+				{
+					$button.attr('name', button.name);
+				}
+
+				if(button.label)
+				{
+					$button.html(button.label);
+				}
+
+				if(typeof button.onClick === typeof function (){
+				})
+				{
+					$button.on("click", function (){
+						button.onClick.call(button, base)
+					});
+				}
+
+				return $button;
+			}
+		}
+
 		function setPlaceholder($placeholder)
 		{
 			base.$el.data(base.constants.data.placeholder, $placeholder);
@@ -699,47 +742,7 @@
 
 					if(button instanceof $.DateTimePicker.Button)
 					{
-						let show = button.show;
-
-						if(typeof button.show === typeof function (){
-						})
-						{
-							show = button.show.call(button, base);
-						}
-
-						if(show)
-						{
-							let $button = $("<button>");
-
-							/**
-							 * @type {$.DateTimePicker.Button}
-							 */
-							if(button.className)
-							{
-								$button.addClass(button.className);
-							}
-
-							if(button.name)
-							{
-								$button.attr('name', button.name);
-							}
-
-							if(button.label)
-							{
-								$button.html(button.label);
-							}
-
-							if(typeof button.onClick === typeof function (){
-							})
-							{
-								$button.on("click", function (){
-									button.onClick.call(button, base)
-								});
-							}
-
-							$buttons.append($button);
-
-						}
+						$buttons.append(createButton(button));
 					}
 					else
 					{
