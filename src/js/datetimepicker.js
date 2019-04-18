@@ -247,7 +247,8 @@
 				);
 		}
 
-		function createButton(button){
+		function createButton(button)
+		{
 			let show = button.show;
 
 			if(typeof button.show === typeof function (){
@@ -386,24 +387,24 @@
 			case "hooks":
 				if(typeof options === typeof {})
 				{
-					let event = null;
-					for(event in options)
+					let hook = null;
+					for(hook in options)
 					{
-						if(options.hasOwnProperty(event))
+						if(options.hasOwnProperty(hook))
 						{
-							let callback = options[event];
+							let callback = options[hook];
 
 							if(typeof callback === typeof function (){
 							})
 							{
-								if(!Array.isArray(base.hooks[event]))
+								if(!Array.isArray(base.hooks[hook]))
 								{
-									base.hooks[event] = [base.hooks[event]];
+									base.hooks[hook] = [base.hooks[hook]];
 								}
 
-								if(base.hooks[event].indexOf(callback) === -1)
+								if(base.hooks[hook].indexOf(callback) === -1)
 								{
-									base.hooks[event].push(callback);
+									base.hooks[hook].push(callback);
 								}
 							}
 						}
@@ -414,7 +415,8 @@
 			case 'exec':
 				if(typeof options === typeof {})
 				{
-					for(let event in options)
+					let event;
+					for(event in options)
 					{
 						if(options.hasOwnProperty(event))
 						{
@@ -729,8 +731,10 @@
 			}
 		};
 
-		base.drawButtons = function(){
-			let $buttons = base.getPlaceholder().find('.datetimepicker-view').filter('.datetimepicker-buttons');
+		base.drawButtons = function (){
+			let $buttons = base.getPlaceholder()
+				.find('.datetimepicker-view')
+				.filter('.datetimepicker-buttons');
 
 			$buttons.html('');
 
@@ -955,6 +959,8 @@
 			}
 
 			let $weeks = $placeholder.find('.datetimepicker-list-weeks');
+			let classes, action;
+
 			if(base.options.displayWeeks)
 			{
 				$weeks.html('');
@@ -965,8 +971,8 @@
 					let $week = $("<div>")
 						.html(week.format('W'));
 
-					let classes = ['datetimepicker-cell'];
-					let action = ["week"];
+					classes = ['datetimepicker-cell'];
+					action = ["week"];
 
 					if(base.allows('weeks'))
 					{
@@ -1012,8 +1018,8 @@
 				let $day = $("<div>")
 					.html(viewDay.get('date'));
 
-				let classes = ['datetimepicker-cell'];
-				let action = ["date"];
+				classes = ['datetimepicker-cell'];
+				action = ["date"];
 				if(viewDay.isBefore(monthBegin) || viewDay.isAfter(monthEnd))
 				{
 					classes.push('datetimepicker-another-month');
@@ -1260,7 +1266,7 @@
 				let $year = $("<div>")
 					.html(i);
 
-				let year = moment({year: i});
+				year = moment({year: i});
 				let yearBegin = year.clone()
 					.startOf('year');
 				let yearEnd = year.clone()
@@ -1619,19 +1625,23 @@
 						base.triggers[trigger] = true;
 
 						let view = base.options.trigger[trigger];
-						$trigger.on(
-							"click", function (){
-								if(!base.getPlaceholder()
-									.is(":visible") || base.viewpoint !== view)
-								{
-									base.events.show.call(base, view);
-								}
-								else
-								{
-									base.events.hide.call(base);
-								}
+						(
+							function (view){
+								$trigger.on(
+									"click", function (){
+										if(!base.getPlaceholder()
+											.is(":visible") || base.viewpoint !== view)
+										{
+											base.events.show.call(base, view);
+										}
+										else
+										{
+											base.events.hide.call(base);
+										}
+									}
+								)
 							}
-						)
+						)(view);
 					}
 				}
 			}
@@ -1773,7 +1783,7 @@
 					let val = picker.$el.val();
 					let current;
 
-					if (val)
+					if(val)
 					{
 						current = moment(val);
 					}
@@ -1795,8 +1805,8 @@
 			/**
 			 * @param {$.DateTimePicker} picker
 			 */
-			show: function(picker){
-				if (picker instanceof $.DateTimePicker)
+			show: function (picker){
+				if(picker instanceof $.DateTimePicker)
 				{
 					return (picker.allows("time") && picker.viewpoint === 'days');
 				}
@@ -1818,7 +1828,7 @@
 					let val = picker.$el.val();
 					let current;
 
-					if (val)
+					if(val)
 					{
 						current = moment(val);
 					}
@@ -1839,8 +1849,8 @@
 			/**
 			 * @param {$.DateTimePicker} picker
 			 */
-			show: function(picker){
-				if (picker instanceof $.DateTimePicker)
+			show: function (picker){
+				if(picker instanceof $.DateTimePicker)
 				{
 					return (picker.allows("time") && picker.viewpoint === 'days');
 				}
