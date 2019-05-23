@@ -1793,15 +1793,14 @@
 	};
 
 	$.DateTimePicker.Button = class {
-		name = '';
-		label = '';
-		className = '';
-		title='';
-		onClick = null;
-		show = true;
-		placeholder = null;
-
 		constructor(options){
+			this.name = '';
+			this.label = '';
+			this.className = '';
+			this.title='';
+			this.onClick = null;
+			this.show = true;
+			this.placeholder = null;
 			return this.setOptions(options);
 		}
 
