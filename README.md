@@ -51,6 +51,7 @@ Please download the [latest release](https://github.com/arashdalir/datetimepicke
 
 ### `$.DateTimePicker.views`
 can be any of `'time'`, `'days'`, `'weeks'`, `'months'`, `'years'`, `'decades'` respectively to begin the selection from day, month, year or decade level.
+
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to internal parameters](#internal-parameters)
 
@@ -247,47 +248,56 @@ it checks whether [`disableHooks` manipulator](#disablehooks) is set or not. if 
 
 ### `isDisabled($target)`
 `$target` is a DOM element, which when `click`ed, will set the day, month or year in input field. this function checks if the given `$target` is disabled, which usually means it's outside the allowed date-range (defined using [min](#min) and [max](#max))
+
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to functions](#functions)
 
 ### `getPlaceholder()`
 returns the widget placeholder. if none is defined for the instance, then it will first create it.
+
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to functions](#functions)
 
 ### `getFormat(view)`
 it returns the [`allow`](#allow)ed format for a given `view` or `undefined`.
+
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to functions](#functions)
 
 ### `allows(view, checkTime)`
 it returns a `boolean` view indicting if the given `view` is defined as [`allow`](#allow)ed. 
-- `checkTime` is only useful if `view === 'days'`, and it will check if either `days` or `time` is [`allow`](#allow)ed
+- `checkTime` is only useful if `view === 'days'`, and it will check if either `days` or `time` is [`allow`](#allow)ed.
+
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to functions](#functions)
 
 ### `matchValueView(datetime)`
 checks if the provided `datetime` value matches any of the [`allow`](#allow)ed formats.
+
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to functions](#functions)
 
 ### `getDateTime()`
 returns a `moment.js` object containing either the value of input-field or if not set, current date-time.
+
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to functions](#functions)
 
 ### `showCalendar(datetime, view)`
 shows the widget opened with `view` as view-point, set to `datetime`
+
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to functions](#functions)
 
 ### `drawButtons()`
 creates buttons defined in [`options.buttons`](#buttons).
+
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to functions](#functions)
 
 ### `getNextAllowed(view, offset)`
 > to be documented
+
 [⬆ back to top](#table-of-contents) or 
 [⬅ back to functions](#functions)
 
