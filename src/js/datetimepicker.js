@@ -7,6 +7,7 @@
  */
 (function ($){
 	'use strict';
+
 	$.DateTimePicker = function (el, options){
 		// To avoid scope issues, use 'base' instead of 'this'
 		// to reference this class from internal events and functions.
@@ -57,6 +58,13 @@
 			backspace: 8,
 			numLock: 144
 		};
+
+		function getButtonsPlaceholder(base)
+		{
+			return base.getPlaceholder()
+				.find('.datetimepicker-view')
+				.filter('.datetimepicker-buttons')
+		}
 
 		function extractTimeFormat(format)
 		{
@@ -261,9 +269,12 @@
 			{
 				let $button = $("<button>");
 
+				$button.attr("type", "button");
+
 				/**
 				 * @type {$.DateTimePicker.Button}
 				 */
+
 				if(button.className)
 				{
 					$button.addClass(button.className);
@@ -272,6 +283,11 @@
 				if(button.name)
 				{
 					$button.attr('name', button.name);
+				}
+
+				if(button.title)
+				{
+					$button.attr("title", button.title);
 				}
 
 				if(button.label)
@@ -285,6 +301,18 @@
 					$button.on("click", function (){
 						button.onClick.call(button, base)
 					});
+				}
+
+				if (typeof button.hooks === typeof {})
+				{
+					if (button.hooks.hasOwnProperty('prepare'))
+					{
+						if(typeof button.hooks.prepare === typeof function (){
+						})
+						{
+							button.hooks.prepare.call($button, base);
+						}
+					}
 				}
 
 				return $button;
@@ -487,7 +515,12 @@
 
 		base.getFormat = function (view){
 			let format = "";
-			if(typeof view !== typeof undefined)
+			if(!view || typeof view === typeof undefined)
+			{
+				view = base.getNextAllowed();
+			}
+
+			if (view)
 			{
 				if(['days', 'time'].indexOf(view) !== -1)
 				{
@@ -721,7 +754,12 @@
 
 				if(base.options.buttons)
 				{
-					base.drawButtons();
+					let $buttons = getButtonsPlaceholder(base);
+
+					if ($buttons.find("button").length)
+					{
+						base.showView($buttons);
+					}
 				}
 
 				base.callHook("showCalendar", $placeholder, view);
@@ -732,30 +770,47 @@
 		};
 
 		base.drawButtons = function (){
-			let $buttons = base.getPlaceholder()
-				.find('.datetimepicker-view')
-				.filter('.datetimepicker-buttons');
+			let $placeholders = {
+				main: getButtonsPlaceholder(base)
+			};
 
-			$buttons.html('');
-
+			let placeholder = '';
 			for(let b in base.options.buttons)
 			{
 				if(base.options.buttons.hasOwnProperty(b))
 				{
 					let button = base.options.buttons[b];
 
+					placeholder = "main";
 					if(button instanceof $.DateTimePicker.Button)
 					{
-						$buttons.append(createButton(button));
+						if(button.placeholder)
+						{
+							placeholder = button.placeholder;
+
+							if (!$placeholders.hasOwnProperty(placeholder))
+							{
+								$placeholders[placeholder] = $(placeholder);
+							}
+						}
+
+						button = createButton(button)
 					}
-					else
+
+					if (!$placeholders[placeholder].hasClass('reset'))
 					{
-						$buttons.append(button);
+						$placeholders[placeholder].html('');
+						$placeholders[placeholder].addClass('reset');
 					}
+
+					$placeholders[placeholder].append(button);
 				}
 			}
 
-			base.showView($buttons);
+			for(let p in $placeholders)
+			{
+				$placeholders[p].removeClass('reset');
+			}
 		};
 
 		base.getNextAllowed = function (view, offset){
@@ -770,7 +825,16 @@
 
 			let next = null;
 
-			let index = $.DateTimePicker.views.indexOf(view);
+			let index;
+
+			if (view && typeof view !== typeof undefined)
+			{
+				index = $.DateTimePicker.views.indexOf(view);
+			}
+			else
+			{
+				index = 0;
+			}
 
 			if(index !== -1)
 			{
@@ -1651,6 +1715,11 @@
 				base.getPlaceholder();
 				base.showCalendar();
 			}
+
+			if(base.options.buttons)
+			{
+				base.drawButtons();
+			}
 		}
 		;
 
@@ -1723,35 +1792,38 @@
 		base.init();
 	};
 
-	$.DateTimePicker.Button = function (options){
-		let base = this;
+	$.DateTimePicker.Button = class {
+		name = '';
+		label = '';
+		className = '';
+		title='';
+		onClick = null;
+		show = true;
+		placeholder = null;
 
-		base.$el = $(base);
-		base.el = base;
+		constructor(options){
+			return this.setOptions(options);
+		}
 
-		base.name = '';
-		base.label = '';
-		base.className = '';
-		base.onClick = null;
-		base.show = true;
-
-		base.setOptions = function (options){
+		setOptions(options)
+		{
 			for(let o in options)
 			{
 				if(options.hasOwnProperty(o))
 				{
-					if(base.hasOwnProperty(o))
+					if(this.hasOwnProperty(o))
 					{
-						base[o] = options[o];
+						this[o] = options[o];
 					}
 				}
 			}
 
-			return base;
-		};
+			return this;
+		}
 
-		base.setOptions(options);
-		return base;
+		duplicate(){
+			return new $.DateTimePicker.Button(this);
+		}
 	};
 
 	$.DateTimePicker.DefaultButtons = {

@@ -447,9 +447,11 @@ accepts following options:
 #### Button Options
 ```javascript
 var options = {
-	className: '',
+	name: '',
 	label: '',
-	name: '', 
+	className: '',
+	title:'',
+	placeholder: null,
 	onClick: function(dateTimePickerInstance){},
 	show: function(dateTimePickerInstance){} // can also be true or false
 };
