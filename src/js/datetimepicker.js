@@ -1792,38 +1792,32 @@
 		base.init();
 	};
 
-	$.DateTimePicker.Button = class {
-		constructor(options){
+	$.DateTimePicker.Button = /** @class */ (function () {
+		function Button(options) {
 			this.name = '';
 			this.label = '';
 			this.className = '';
-			this.title='';
+			this.title = '';
 			this.onClick = null;
 			this.show = true;
 			this.placeholder = null;
 			return this.setOptions(options);
 		}
-
-		setOptions(options)
-		{
-			for(let o in options)
-			{
-				if(options.hasOwnProperty(o))
-				{
-					if(this.hasOwnProperty(o))
-					{
+		Button.prototype.setOptions = function (options) {
+			for (var o in options) {
+				if (options.hasOwnProperty(o)) {
+					if (this.hasOwnProperty(o)) {
 						this[o] = options[o];
 					}
 				}
 			}
-
 			return this;
-		}
-
-		duplicate(){
+		};
+		Button.prototype.duplicate = function () {
 			return new $.DateTimePicker.Button(this);
-		}
-	};
+		};
+		return Button;
+	}());
 
 	$.DateTimePicker.DefaultButtons = {
 		now: new $.DateTimePicker.Button({
